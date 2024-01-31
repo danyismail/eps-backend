@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"os"
 
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
@@ -9,12 +10,12 @@ import (
 
 func New() *gorm.DB {
 
-	// dbDriver := os.Getenv("DB_DRIVER")
-	// dbURL := os.Getenv("DB_URL")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_URL")
 
-	// if "" == dbDriver || "" == dbURL {
-	// 	log.Fatalln("Database credentials not define.")
-	// }
+	if "" == dbHost || "" == dbPort {
+		log.Fatalln("Database credentials not define.")
+	}
 
 	// db, err := gorm.Open(dbDriver, dbURL)
 
@@ -51,7 +52,7 @@ func New() *gorm.DB {
 
 	// github.com/denisenkom/go-mssqldb
 	// dsn := "sqlserver://gorm:digi_eps@36.64.19.114:1433?database=digi_eps&encrypt=disable"
-	connString := "server=192.168.26.170;user id=digi_eps;password=htLlph3lYkrqfaRTqKEELxaf;encrypt=disable;database=digi_eps"
+	connString := "server=" + dbHost + ";user id=digi_eps;password=htLlph3lYkrqfaRTqKEELxaf;encrypt=disable;database=digi_eps"
 	db, err := gorm.Open(sqlserver.Open(connString), &gorm.Config{})
 
 	if err != nil {

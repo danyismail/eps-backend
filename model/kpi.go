@@ -2,13 +2,13 @@ package model
 
 import "time"
 
-type VKpi struct {
-	TglEntri    time.Time
-	TglStatus   time.Time
-	TglTempo    time.Time
-	KodeProduk  string
-	Tujuan      string
-	Status      string
-	WaktuRespon string
-	Kpi         int
+type VKpis struct {
+	TglEntri    time.Time `json:"tanggal_entri"`
+	TglStatus   time.Time `json:"tanggal_status"`
+	TglTempo    time.Time `json:"tanggal_tempo"`
+	KodeProduk  string    `json:"kode_produk"`
+	Tujuan      string    `json:"tujuan"`
+	Status      string    `json:"status"`
+	WaktuRespon string    `json:"waktu_respon"`
+	Kpi         int       `json:"kpi"`
 }

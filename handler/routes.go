@@ -10,8 +10,9 @@ import (
 
 func (h *Handler) Register(v1 *echo.Group) {
 	sf := v1.Group("/eps")
-	sf.GET("/testKpi", h.KpiTest)
-	sf.POST("/getKpis", h.GetKpi)
+	sf.GET("/ping", h.HealthCheck)
+	sf.GET("/mockKpis", h.MockKPI)
+	sf.POST("/getKpis", h.GetKPI)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {
