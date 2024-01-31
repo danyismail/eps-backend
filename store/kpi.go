@@ -20,7 +20,7 @@ func NewKpiStore(db *gorm.DB) *KpiConstruct {
 func (c *KpiConstruct) FindAll(page int, view int, mdn string) (*[]model.VKpis, int64, error) {
 	var kpis []model.VKpis
 	var total int64
-	if page == -1 && view == -1 {
+	if page == 0 && view == 0 {
 		if err := c.db.Debug().Limit(10).Find(&kpis).Order("tgl_entri DESC").Count(&total).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
 				return nil, total, nil
