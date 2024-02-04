@@ -59,7 +59,7 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 	}
 
 	if pageNumber > 0 && pageSize > 0 {
-		sql = fmt.Sprintf("%s ORDER BY (SELECT NULL) OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
+		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
 	if err := c.db.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
