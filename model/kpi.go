@@ -11,4 +11,5 @@ type VKpis struct {
 	Status      string    `json:"status"`
 	WaktuRespon string    `json:"waktu_respon"`
 	Kpi         int       `json:"kpi"`
+	Shift       string    `json:"shift"`
 }

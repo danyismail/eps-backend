@@ -17,7 +17,7 @@ func (h *Handler) GetKPI(c echo.Context) error {
 			Data:       nil,
 		})
 	}
-	result, total, err := h.kpiStore.FindAll(req.Page, req.View, req.Mdn)
+	result, total, err := h.kpiStore.FindAll(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Total:      int(total),
