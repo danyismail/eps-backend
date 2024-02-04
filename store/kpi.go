@@ -20,7 +20,7 @@ func NewKpiStore(db *gorm.DB) *KpiConstruct {
 
 func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, int64, error) {
 	var kpis []model.VKpis
-	var total int64
+	var totalRow int64
 
 	if startDt == "" {
 		startDt = time.Now().AddDate(0, 0, -1).Format("2006-01-02")
@@ -62,10 +62,10 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	if err := c.db.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
-		return nil, total, err
+	if err := c.db.Debug().Raw(sql).Scan(&kpis).Count(&totalRow).Error; err != nil {
+		return nil, totalRow, err
 	}
-	return &kpis, total, nil
+	return &kpis, totalRow, nil
 	/*
 		var kpis []model.VKpis
 		var total int64
