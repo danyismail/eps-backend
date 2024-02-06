@@ -17,20 +17,22 @@ func (h *Handler) GetKPI(c echo.Context) error {
 			Data:       nil,
 		})
 	}
-	result, total, err := h.kpiStore.FindAll(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
+	result, total, countData, err := h.kpiStore.FindAll(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Total:      int(total),
-			Data:       nil,
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
+			Total:       total,
+			ResultCount: countData,
+			Data:        nil,
+			StatusCode:  http.StatusInternalServerError,
+			Message:     err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
-		Total:      int(total),
-		Data:       result,
-		StatusCode: http.StatusOK,
-		Message:    "success",
+		Total:       total,
+		ResultCount: countData,
+		Data:        result,
+		StatusCode:  http.StatusOK,
+		Message:     "success",
 	})
 
 }

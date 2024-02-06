@@ -18,7 +18,7 @@ func NewKpiStore(db *gorm.DB) *KpiConstruct {
 	}
 }
 
-func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, int64, error) {
+func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, int64, int64, error) {
 	var kpis []model.VKpis
 	var totalRow int64
 
@@ -34,7 +34,7 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		pageNumber = 1
 	}
 	if pageSize == 0 {
-		pageSize = 10
+		pageSize = 500
 	}
 
 	offset := (pageNumber - 1) * pageSize
@@ -62,10 +62,18 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	if err := c.db.Debug().Raw(sql).Scan(&kpis).Count(&totalRow).Error; err != nil {
-		return nil, totalRow, err
+	var totalData int64
+	if err := c.db.Debug().Raw("select count(1) from v_kpis").Scan(&totalData).Error; err != nil {
+		return nil, totalData, totalRow, err
 	}
-	return &kpis, totalRow, nil
+	if err := c.db.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
+		return nil, totalData, totalRow, err
+	}
+	totalRow = int64(len(kpis))
+	if len(kpis) <= 0 {
+		return nil, totalData, totalRow, nil
+	}
+	return &kpis, totalData, totalRow, nil
 	/*
 		var kpis []model.VKpis
 		var total int64
