@@ -13,6 +13,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	sf.GET("/ping", h.HealthCheck)
 	sf.GET("/mockKpis", h.MockKPI)
 	sf.POST("/getKpis", h.GetKPI)
+	sf.GET("/deposit", h.GetBalance)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

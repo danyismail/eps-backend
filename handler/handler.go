@@ -7,11 +7,13 @@ import (
 )
 
 type Handler struct {
-	kpiStore store.KpiStore
+	kpiStore     store.KpiStore
+	depositStore store.DepositStore
 }
 
 func NewHandler(db *gorm.DB) *Handler {
 	return &Handler{
-		kpiStore: store.NewKpiStore(db),
+		kpiStore:     store.NewKpiStore(db),
+		depositStore: store.NewDepositStore(db),
 	}
 }

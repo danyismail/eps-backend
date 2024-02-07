@@ -13,3 +13,11 @@ type VKpis struct {
 	Kpi         int       `json:"kpi"`
 	Shift       string    `json:"shift"`
 }
+
+type CurrentDeposit struct {
+	KodeModul      string  `json:"kode_modul"`
+	Label          string  `json:"label"`
+	TotalTransaksi int64   `json:"total_transaksi"`
+	PemakaianSaldo float64 `json:"pemakaian_saldo"`
+	SaldoSekarang  float64 `json:"saldo_sekarang"`
+}
