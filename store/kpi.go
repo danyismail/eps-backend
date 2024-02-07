@@ -3,6 +3,7 @@ package store
 import (
 	"eps-backend/model"
 	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -34,7 +35,7 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		pageNumber = 1
 	}
 	if pageSize == 0 {
-		pageSize = 500
+		pageSize = 200
 	}
 
 	offset := (pageNumber - 1) * pageSize
@@ -58,14 +59,17 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		sql = fmt.Sprintf("%s %s", sql, whereQuery)
 	}
 
+	//count here
+	var totalData int64
+	countQuery := strings.Replace(sql, "*", "COUNT(1)", -1)
+	if err := c.db.Debug().Raw(countQuery).Scan(&totalData).Error; err != nil {
+		return nil, totalData, totalRow, err
+	}
+
 	if pageNumber > 0 && pageSize > 0 {
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	var totalData int64
-	if err := c.db.Debug().Raw("select count(1) from v_kpis").Scan(&totalData).Error; err != nil {
-		return nil, totalData, totalRow, err
-	}
 	if err := c.db.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
 		return nil, totalData, totalRow, err
 	}
