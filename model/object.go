@@ -23,8 +23,8 @@ type CurrentDeposit struct {
 }
 
 type SalesReport struct {
-	Ma        int64  `json:"ma"`
-	Trx       string `json:"trx"`
-	Pembelian string `json:"pembelian"`
-	Penjualan string `json:"penjualan"`
+	Ma        int64   `json:"ma"`
+	Trx       int64   `json:"trx"`
+	Pembelian float64 `json:"pembelian"`
+	Penjualan float64 `json:"penjualan"`
 }
