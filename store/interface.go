@@ -10,3 +10,7 @@ type KpiStore interface {
 type DepositStore interface {
 	GetBalanceToday() ([]model.CurrentDeposit, error)
 }
+
+type SalesStore interface {
+	GetSalesToday() ([]model.SalesReport, error)
+}

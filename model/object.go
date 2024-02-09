@@ -21,3 +21,10 @@ type CurrentDeposit struct {
 	PemakaianSaldo float64 `json:"pemakaian_saldo"`
 	SaldoSekarang  float64 `json:"saldo_sekarang"`
 }
+
+type SalesReport struct {
+	Ma        int64  `json:"ma"`
+	Trx       string `json:"trx"`
+	Pembelian string `json:"pembelian"`
+	Penjualan string `json:"penjualan"`
+}
