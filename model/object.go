@@ -27,4 +27,5 @@ type SalesReport struct {
 	Trx       int64   `json:"trx"`
 	Pembelian float64 `json:"pembelian"`
 	Penjualan float64 `json:"penjualan"`
+	Laba      float64 `json:"laba"`
 }
