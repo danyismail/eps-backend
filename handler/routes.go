@@ -15,6 +15,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	sf.POST("/getKpis", h.GetKPI)
 	sf.GET("/deposit", h.GetBalance)
 	sf.GET("/sales", h.GetSales)
+	sf.GET("/salesPeriode", h.GetSalesPeriode)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

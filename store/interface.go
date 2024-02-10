@@ -13,4 +13,5 @@ type DepositStore interface {
 
 type SalesStore interface {
 	GetSalesToday() ([]model.SalesReport, error)
+	Sales(from, to string) ([]model.SalesReport, error)
 }
