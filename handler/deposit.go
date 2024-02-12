@@ -24,3 +24,20 @@ func (h *Handler) GetBalance(c echo.Context) error {
 	})
 
 }
+
+func (h *Handler) GetBalanceProd(c echo.Context) error {
+	c.Logger().Info("::GetBalance Started::")
+	result, err := h.depositStore.GetBalanceTodayProd()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       result,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}

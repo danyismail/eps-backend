@@ -13,9 +13,13 @@ func (h *Handler) Register(v1 *echo.Group) {
 	sf.GET("/ping", h.HealthCheck)
 	sf.GET("/mockKpis", h.MockKPI)
 	sf.POST("/getKpis", h.GetKPI)
+	sf.POST("/getKpisProd", h.GetKPIProd)
 	sf.GET("/deposit", h.GetBalance)
+	sf.GET("/depositProd", h.GetBalanceProd)
 	sf.GET("/sales", h.GetSales)
+	sf.GET("/salesProd", h.GetSalesProd)
 	sf.GET("/salesPeriode", h.GetSalesPeriode)
+	sf.GET("/salesPeriodeProd", h.GetSalesPeriodeProd)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

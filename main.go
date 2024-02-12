@@ -16,12 +16,15 @@ func main() {
 	if err != nil {
 		log.Fatalln("Error loading .env file")
 	}
-	d := db.New()
+	devDb, prodDb, err := db.New()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	r := router.New()
 	v1 := r.Group("/api")
 
-	h := handler.NewHandler(d)
+	h := handler.NewHandler(devDb, prodDb)
 	h.Register(v1)
 	h.HttpErrorHandler(r)
 

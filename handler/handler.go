@@ -12,10 +12,10 @@ type Handler struct {
 	salesStore   store.SalesStore
 }
 
-func NewHandler(db *gorm.DB) *Handler {
+func NewHandler(dev *gorm.DB, prod *gorm.DB) *Handler {
 	return &Handler{
-		kpiStore:     store.NewKpiStore(db),
-		depositStore: store.NewDepositStore(db),
-		salesStore:   store.NewSalesStore(db),
+		kpiStore:     store.NewKpiStore(dev, prod),
+		depositStore: store.NewDepositStore(dev, prod),
+		salesStore:   store.NewSalesStore(dev, prod),
 	}
 }
