@@ -14,6 +14,13 @@ type VKpis struct {
 	Shift       string    `json:"shift"`
 }
 
+type AttributeKPI struct {
+	Total   int64
+	View    int64
+	Success int64
+	Failed  int64
+}
+
 type CurrentDeposit struct {
 	KodeModul      string  `json:"kode_modul"`
 	Label          string  `json:"label"`

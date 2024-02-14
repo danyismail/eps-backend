@@ -17,19 +17,23 @@ func (h *Handler) GetKPI(c echo.Context) error {
 			Data:       nil,
 		})
 	}
-	result, total, countData, err := h.kpiStore.FindAll(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
+	result, attribute, err := h.kpiStore.FindAll(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Total:       total,
-			ResultCount: countData,
+			Total:       attribute.Total,
+			ResultCount: attribute.View,
+			Success:     attribute.Success,
+			Failed:      attribute.Failed,
 			Data:        nil,
 			StatusCode:  http.StatusInternalServerError,
 			Message:     err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
-		Total:       total,
-		ResultCount: countData,
+		Total:       attribute.Total,
+		ResultCount: attribute.View,
+		Success:     attribute.Success,
+		Failed:      attribute.Failed,
 		Data:        result,
 		StatusCode:  http.StatusOK,
 		Message:     "success",
@@ -47,19 +51,23 @@ func (h *Handler) GetKPIProd(c echo.Context) error {
 			Data:       nil,
 		})
 	}
-	result, total, countData, err := h.kpiStore.FindAllProd(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
+	result, attribute, err := h.kpiStore.FindAllProd(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Total:       total,
-			ResultCount: countData,
+			Total:       attribute.Total,
+			ResultCount: attribute.View,
+			Success:     attribute.Success,
+			Failed:      attribute.Failed,
 			Data:        nil,
 			StatusCode:  http.StatusInternalServerError,
 			Message:     err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
-		Total:       total,
-		ResultCount: countData,
+		Total:       attribute.Total,
+		ResultCount: attribute.View,
+		Success:     attribute.Success,
+		Failed:      attribute.Failed,
 		Data:        result,
 		StatusCode:  http.StatusOK,
 		Message:     "success",

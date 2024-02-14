@@ -21,9 +21,9 @@ func NewKpiStore(dev *gorm.DB, prod *gorm.DB) *KpiConstruct {
 	}
 }
 
-func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, int64, int64, error) {
+func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, model.AttributeKPI, error) {
 	var kpis []model.VKpis
-	var totalRow int64
+	var attr model.AttributeKPI
 
 	if startDt == "" {
 		startDt = time.Now().AddDate(0, 0, -1).Format("2006-01-02")
@@ -37,7 +37,7 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		pageNumber = 1
 	}
 	if pageSize == 0 {
-		pageSize = 200
+		pageSize = 10
 	}
 
 	offset := (pageNumber - 1) * pageSize
@@ -61,30 +61,46 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		sql = fmt.Sprintf("%s %s", sql, whereQuery)
 	}
 
-	//count here
-	var totalData int64
+	//count all data
 	countQuery := strings.Replace(sql, "*", "COUNT(1)", -1)
-	if err := c.dev.Debug().Raw(countQuery).Scan(&totalData).Error; err != nil {
-		return nil, totalData, totalRow, err
+	if err := c.dev.Debug().Raw(countQuery).Scan(&attr.Total).Error; err != nil {
+		return nil, attr, err
 	}
+	fmt.Println("all kpi : ", attr.Total)
 
+	querySuccess := fmt.Sprintf("%s %s", sql, " AND kpi <= 180")
+	countSuccess := strings.Replace(querySuccess, "*", "COUNT(1)", -1)
+	if err := c.dev.Debug().Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
+		return nil, attr, err
+	}
+	fmt.Println("success kpi : ", attr.Success)
+
+	queryFailed := fmt.Sprintf("%s %s", sql, " AND kpi > 180")
+	countFailed := strings.Replace(queryFailed, "*", "COUNT(1)", -1)
+	if err := c.dev.Debug().Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
+		return nil, attr, err
+	}
+	fmt.Println("failed kpi : ", attr.Failed)
+
+	//get data with limit
 	if pageNumber > 0 && pageSize > 0 {
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
 	if err := c.dev.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
-		return nil, totalData, totalRow, err
+		return nil, attr, err
 	}
-	totalRow = int64(len(kpis))
-	if len(kpis) <= 0 {
-		return nil, totalData, totalRow, nil
+
+	attr.View = int64(len(kpis))
+	if attr.View <= 0 {
+		return nil, attr, nil
 	}
-	return &kpis, totalData, totalRow, nil
+	return &kpis, attr, nil
 }
 
-func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, int64, int64, error) {
+func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int, pageSize int, mdn string, status int, shift string) (*[]model.VKpis, model.AttributeKPI, error) {
 	var kpis []model.VKpis
-	var totalRow int64
+	var attr model.AttributeKPI
 
 	if startDt == "" {
 		startDt = time.Now().AddDate(0, 0, -1).Format("2006-01-02")
@@ -98,7 +114,7 @@ func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int,
 		pageNumber = 1
 	}
 	if pageSize == 0 {
-		pageSize = 200
+		pageSize = 10
 	}
 
 	offset := (pageNumber - 1) * pageSize
@@ -122,25 +138,41 @@ func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int,
 		sql = fmt.Sprintf("%s %s", sql, whereQuery)
 	}
 
-	//count here
-	var totalData int64
+	//count all data
 	countQuery := strings.Replace(sql, "*", "COUNT(1)", -1)
-	if err := c.prod.Debug().Raw(countQuery).Scan(&totalData).Error; err != nil {
-		return nil, totalData, totalRow, err
+	if err := c.prod.Debug().Raw(countQuery).Scan(&attr.Total).Error; err != nil {
+		return nil, attr, err
 	}
+	fmt.Println("all kpi : ", attr.Total)
 
+	querySuccess := fmt.Sprintf("%s %s", sql, " AND kpi <= 180")
+	countSuccess := strings.Replace(querySuccess, "*", "COUNT(1)", -1)
+	if err := c.prod.Debug().Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
+		return nil, attr, err
+	}
+	fmt.Println("success kpi : ", attr.Success)
+
+	queryFailed := fmt.Sprintf("%s %s", sql, " AND kpi > 180")
+	countFailed := strings.Replace(queryFailed, "*", "COUNT(1)", -1)
+	if err := c.prod.Debug().Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
+		return nil, attr, err
+	}
+	fmt.Println("failed kpi : ", attr.Failed)
+
+	//get data with limit
 	if pageNumber > 0 && pageSize > 0 {
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
 	if err := c.prod.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
-		return nil, totalData, totalRow, err
+		return nil, attr, err
 	}
-	totalRow = int64(len(kpis))
-	if len(kpis) <= 0 {
-		return nil, totalData, totalRow, nil
+
+	attr.View = int64(len(kpis))
+	if attr.View <= 0 {
+		return nil, attr, nil
 	}
-	return &kpis, totalData, totalRow, nil
+	return &kpis, attr, nil
 }
 
 func (c *KpiConstruct) Test() (*[]model.VKpis, error) {

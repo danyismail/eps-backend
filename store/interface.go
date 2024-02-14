@@ -3,8 +3,9 @@ package store
 import "eps-backend/model"
 
 type KpiStore interface {
-	FindAll(startDt, endDt string, page int, view int, mdn string, status int, shift string) (*[]model.VKpis, int64, int64, error)
-	FindAllProd(startDt, endDt string, page int, view int, mdn string, status int, shift string) (*[]model.VKpis, int64, int64, error)
+	//data, totalSelectedData, view per page, err
+	FindAll(startDt, endDt string, page int, view int, mdn string, status int, shift string) (data *[]model.VKpis, attribute model.AttributeKPI, err error)
+	FindAllProd(startDt, endDt string, page int, view int, mdn string, status int, shift string) (data *[]model.VKpis, attribute model.AttributeKPI, err error)
 	Test() (*[]model.VKpis, error)
 }
 
