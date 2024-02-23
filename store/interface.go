@@ -20,3 +20,16 @@ type SalesStore interface {
 	Sales(from, to string) ([]model.SalesReport, error)
 	SalesProd(from, to string) ([]model.SalesReport, error)
 }
+
+type SupplierStore interface {
+	CreateSupplierEps(s model.Supplier) error
+	CreateSupplierAmz(s model.Supplier) error
+	GetSuppliersEps() ([]model.Supplier, error)
+	GetSuppliersAmz() ([]model.Supplier, error)
+	GetSupplierByIdEps(id int) (model.Supplier, error)
+	GetSupplierByIdAmz(id int) (model.Supplier, error)
+	UpdateSuppliersEps(model.Supplier) error
+	UpdateSuppliersAmz(model.Supplier) error
+	DeleteSupplierEps(id int) error
+	DeleteSupplierAmz(id int) error
+}

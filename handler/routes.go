@@ -20,6 +20,19 @@ func (h *Handler) Register(v1 *echo.Group) {
 	sf.GET("/salesProd", h.GetSalesProd)
 	sf.GET("/salesPeriode", h.GetSalesPeriode)
 	sf.GET("/salesPeriodeProd", h.GetSalesPeriodeProd)
+
+	f := v1.Group("/finance")
+	f.GET("/eps/supplier", h.GetSuppliersEps)
+	f.GET("/amz/supplier", h.GetSuppliersAmz)
+	f.GET("/eps/supplier/:id", h.GetSupplierByIdEps)
+	f.GET("/amz/supplier/:id", h.GetSupplierByIdAmz)
+	f.POST("/eps/supplier/create", h.CreateSupplierEps)
+	f.POST("/amz/supplier/create", h.CreateSupplierAmz)
+	f.POST("/eps/supplier/update", h.UpdateSupplierEps)
+	f.POST("/amz/supplier/update", h.UpdateSupplierAmz)
+	f.DELETE("/eps/supplier/delete/:id", h.DeleteSupplierEps)
+	f.DELETE("/amz/supplier/delete/:id", h.DeleteSupplierAmz)
+
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

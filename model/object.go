@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type VKpis struct {
 	TglEntri    time.Time `json:"tanggal_entri"`
@@ -35,4 +39,10 @@ type SalesReport struct {
 	Pembelian float64 `json:"pembelian"`
 	Penjualan float64 `json:"penjualan"`
 	Laba      float64 `json:"laba"`
+}
+
+type Supplier struct {
+	gorm.Model
+	Name   string `json:"name"`
+	Status string `json:"status"`
 }
