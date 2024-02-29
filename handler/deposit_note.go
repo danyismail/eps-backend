@@ -119,6 +119,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	destinationAccount := c.FormValue("destination_account")
 
 	i, _ := strconv.Atoi(amount)
+	intID, _ := strconv.Atoi(id)
 
 	// Get the image file from the form
 	file, err := c.FormFile("image")
@@ -148,7 +149,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 
 	// Create a notes object
 	notes := model.DepositNote{
-		ID:                 id,
+		ID:                 intID,
 		Name:               name,
 		Supplier:           supplier,
 		Amount:             float64(i),
