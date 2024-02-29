@@ -46,3 +46,18 @@ type Supplier struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
 }
+
+type DepositNote struct {
+	ID                 string     `json:"id"`
+	CreatedAt          time.Time  `json:"created_at"`
+	UpdatedAt          time.Time  `json:"updated_at"`
+	DeletedAt          *time.Time `json:"deleted_at"`
+	Name               string     `json:"name"`
+	Supplier           string     `json:"supplier"`
+	Amount             float64    `json:"amount"`
+	OriginAccount      string     `json:"origin_account"`
+	DestinationAccount string     `json:"destination_account"`
+	ImageUpload        string     `json:"image_upload"`
+	Reply              string     `json:"reply"`
+	Status             string     `json:"status"`
+}

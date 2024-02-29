@@ -33,3 +33,9 @@ type SupplierStore interface {
 	DeleteSupplierEps(id int) error
 	DeleteSupplierAmz(id int) error
 }
+
+type DepositNote interface {
+	Create(notes model.DepositNote) error
+	Update(notes model.DepositNote) error
+	GetById(id int) (model.DepositNote, error)
+}
