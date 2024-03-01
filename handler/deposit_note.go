@@ -11,19 +11,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-// id
-// created_at
-// updated_at
-// deleted_at
-// name
-// supplier
-// amount
-// origin_account
-// destination_account
-// image_upload
-// reply
-// status
-
 func (h *Handler) CreateDeposit(c echo.Context) error {
 	c.Logger().Info("::CreateDeposit::")
 	name := c.FormValue("name")
