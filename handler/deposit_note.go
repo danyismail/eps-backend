@@ -68,6 +68,13 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 			Message:    err.Error(),
 		})
 	}
+	if note == nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "record not found",
+		})
+	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
 		Data:       note,
 		StatusCode: http.StatusOK,
@@ -121,16 +128,36 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	i, _ := strconv.Atoi(amount)
 	intID, _ := strconv.Atoi(id)
 
+	note, err := h.depositNoteStore.GetById(intID)
+	if err != nil {
+		return err
+	}
+	if note == nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "record not found",
+		})
+	}
+
 	// Get the image file from the form
 	file, err := c.FormFile("image")
 	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "error get image from form",
+		})
 	}
 
 	// Open the uploaded file
 	src, err := file.Open()
 	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "error open file",
+		})
 	}
 	defer src.Close()
 
@@ -138,18 +165,26 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	imagePath := "uploads/" + id + ".jpg"
 	dst, err := os.Create(imagePath)
 	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "error create file",
+		})
 	}
 	defer dst.Close()
 
 	// Copy the uploaded file to the destination file
 	if _, err = io.Copy(dst, src); err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "error copy file",
+		})
 	}
 
 	// Create a notes object
 	notes := model.DepositNote{
-		ID:                 intID,
+		ID:                 note.ID,
 		Name:               name,
 		Supplier:           supplier,
 		Amount:             float64(i),
@@ -168,7 +203,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
-		Data:       "note",
+		Data:       nil,
 		StatusCode: http.StatusOK,
 		Message:    "success",
 	})

@@ -37,5 +37,5 @@ type SupplierStore interface {
 type DepositNote interface {
 	Create(notes model.DepositNote) error
 	Update(notes model.DepositNote) error
-	GetById(id int) (model.DepositNote, error)
+	GetById(id int) (*model.DepositNote, error)
 }
