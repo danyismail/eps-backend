@@ -26,6 +26,33 @@ func (c *DepositNoteConstruct) Create(notes model.DepositNote) error {
 	return nil
 }
 
+func (c *DepositNoteConstruct) GetStatusCreated() ([]model.DepositNote, error) {
+	notes := []model.DepositNote{}
+	result := c.dev.Raw("select * from deposit_notes dn where image_upload = '';").Scan(&notes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return notes, nil
+}
+
+func (c *DepositNoteConstruct) GetStatusUploaded() ([]model.DepositNote, error) {
+	notes := []model.DepositNote{}
+	result := c.dev.Raw("select * from deposit_notes dn where image_upload <> '';").Scan(&notes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return notes, nil
+}
+
+func (c *DepositNoteConstruct) GetStatusDone() ([]model.DepositNote, error) {
+	notes := []model.DepositNote{}
+	result := c.dev.Raw("select * from deposit_notes dn where CAST(reply AS varchar(MAX)) <> '' and image_upload <> '';").Scan(&notes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return notes, nil
+}
+
 func (c *DepositNoteConstruct) GetById(id int) (*model.DepositNote, error) {
 	notes := new(model.DepositNote)
 	if err := c.dev.Debug().Where("id = ?", id).Find(notes).Error; err != nil {

@@ -82,6 +82,57 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 	})
 }
 
+func (h *Handler) GetDepositCreated(c echo.Context) error {
+	c.Logger().Info("::GetDepositCreated::")
+	note, err := h.depositNoteStore.GetStatusCreated()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       note,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}
+
+func (h *Handler) GetDepositUploaded(c echo.Context) error {
+	c.Logger().Info("::GetDepositCreated::")
+	note, err := h.depositNoteStore.GetStatusUploaded()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       note,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}
+
+func (h *Handler) GetDepositDone(c echo.Context) error {
+	c.Logger().Info("::GetDepositCreated::")
+	note, err := h.depositNoteStore.GetStatusDone()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       note,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}
+
 func (h *Handler) GetImage(c echo.Context) error {
 	c.Logger().Info("::GetImage::")
 	id := c.Param("id")

@@ -36,6 +36,9 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	f.POST("/e/deposit", h.CreateDeposit)
 	f.GET("/e/deposit/:id", h.GetDeposit)
+	f.GET("/e/deposit/created", h.GetDepositCreated)
+	f.GET("/e/deposit/uploaded", h.GetDepositUploaded)
+	f.GET("/e/deposit/done", h.GetDepositDone)
 	f.GET("/e/image/:id", h.GetImage)
 	f.POST("/e/deposit/:id", h.UpdateDeposit)
 
