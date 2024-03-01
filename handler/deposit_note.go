@@ -230,7 +230,9 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		ImageUpload:        imagepath,
 		Reply:              reply,
 	}
-
+	if notes.Reply != "" {
+		notes.Status = "success"
+	}
 	//end of logic
 	err = h.depositNoteStore.Update(notes)
 	if err != nil {
