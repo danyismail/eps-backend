@@ -3,6 +3,7 @@ package handler
 import (
 	"eps-backend/model"
 	"eps-backend/structs"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -162,6 +163,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	amount := c.FormValue("amount")
 	originAccount := c.FormValue("origin_account")
 	destinationAccount := c.FormValue("destination_account")
+	reply := c.FormValue("reply")
 
 	i, _ := strconv.Atoi(amount)
 	intID, _ := strconv.Atoi(id)
@@ -179,45 +181,42 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	}
 
 	// Get the image file from the form
+	var imagepath string
 	file, err := c.FormFile("image")
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Data:       nil,
-			StatusCode: http.StatusInternalServerError,
-			Message:    "error get image from form",
-		})
-	}
+		fmt.Println("no image upload")
+	} else {
+		// Open the uploaded file
+		src, err := file.Open()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+				Data:       nil,
+				StatusCode: http.StatusInternalServerError,
+				Message:    "error open file",
+			})
+		}
+		defer src.Close()
 
-	// Open the uploaded file
-	src, err := file.Open()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Data:       nil,
-			StatusCode: http.StatusInternalServerError,
-			Message:    "error open file",
-		})
-	}
-	defer src.Close()
+		// Create a destination file
+		imagepath = "uploads/" + id + ".jpg"
+		dst, err := os.Create(imagepath)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+				Data:       nil,
+				StatusCode: http.StatusInternalServerError,
+				Message:    "error create file",
+			})
+		}
+		defer dst.Close()
 
-	// Create a destination file
-	imagePath := "uploads/" + id + ".jpg"
-	dst, err := os.Create(imagePath)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Data:       nil,
-			StatusCode: http.StatusInternalServerError,
-			Message:    "error create file",
-		})
-	}
-	defer dst.Close()
-
-	// Copy the uploaded file to the destination file
-	if _, err = io.Copy(dst, src); err != nil {
-		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Data:       nil,
-			StatusCode: http.StatusInternalServerError,
-			Message:    "error copy file",
-		})
+		// Copy the uploaded file to the destination file
+		if _, err = io.Copy(dst, src); err != nil {
+			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+				Data:       nil,
+				StatusCode: http.StatusInternalServerError,
+				Message:    "error copy file",
+			})
+		}
 	}
 
 	// Create a notes object
@@ -228,7 +227,8 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		Amount:             float64(i),
 		OriginAccount:      originAccount,
 		DestinationAccount: destinationAccount,
-		ImageUpload:        imagePath,
+		ImageUpload:        imagepath,
+		Reply:              reply,
 	}
 
 	//end of logic
