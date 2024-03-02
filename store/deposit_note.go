@@ -2,6 +2,7 @@ package store
 
 import (
 	"eps-backend/model"
+	"eps-backend/utils"
 	"errors"
 
 	"gorm.io/gorm"
@@ -19,43 +20,48 @@ func NewDepositNoteStore(dev *gorm.DB, prod *gorm.DB) *DepositNoteConstruct {
 	}
 }
 
-func (c *DepositNoteConstruct) Create(notes model.DepositNote) error {
-	if err := c.dev.Debug().Create(&notes).Error; err != nil {
+func (c *DepositNoteConstruct) Create(notes model.DepositNote, path string) error {
+	if err := c.SelectConn(path).Debug().Create(&notes).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *DepositNoteConstruct) GetStatusCreated() ([]model.DepositNote, error) {
+func (c *DepositNoteConstruct) GetStatusCreated(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	result := c.dev.Raw("select * from deposit_notes dn where image_upload = '';").Scan(&notes)
+	query := "select * from deposit_notes dn where image_upload = '';"
+
+	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return notes, nil
 }
 
-func (c *DepositNoteConstruct) GetStatusUploaded() ([]model.DepositNote, error) {
+func (c *DepositNoteConstruct) GetStatusUploaded(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	result := c.dev.Raw("select * from deposit_notes dn where image_upload <> '';").Scan(&notes)
+	query := "select * from deposit_notes dn where image_upload <> '';"
+
+	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return notes, nil
 }
 
-func (c *DepositNoteConstruct) GetStatusDone() ([]model.DepositNote, error) {
+func (c *DepositNoteConstruct) GetStatusDone(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	result := c.dev.Raw("select * from deposit_notes dn where CAST(reply AS varchar(MAX)) <> '' and image_upload <> '';").Scan(&notes)
+	query := "select * from deposit_notes dn where CAST(reply AS varchar(MAX)) <> '' and image_upload <> '';"
+	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return notes, nil
 }
 
-func (c *DepositNoteConstruct) GetById(id int) (*model.DepositNote, error) {
+func (c *DepositNoteConstruct) GetById(id int, path string) (*model.DepositNote, error) {
 	notes := new(model.DepositNote)
-	if err := c.dev.Debug().Where("id = ?", id).Find(notes).Error; err != nil {
+	if err := c.SelectConn(path).Debug().Where("id = ?", id).Find(notes).Error; err != nil {
 		return nil, err
 	}
 	if notes.ID == 0 {
@@ -64,8 +70,8 @@ func (c *DepositNoteConstruct) GetById(id int) (*model.DepositNote, error) {
 	return notes, nil
 }
 
-func (c *DepositNoteConstruct) Update(notes model.DepositNote) error {
-	result := c.dev.Debug().Updates(&notes)
+func (c *DepositNoteConstruct) Update(notes model.DepositNote, path string) error {
+	result := c.SelectConn(path).Debug().Updates(&notes)
 	if result.RowsAffected == 0 {
 		return errors.New("no record found")
 	}
@@ -73,4 +79,11 @@ func (c *DepositNoteConstruct) Update(notes model.DepositNote) error {
 		return result.Error
 	}
 	return nil
+}
+
+func (c *DepositNoteConstruct) SelectConn(path string) *gorm.DB {
+	if path == utils.Amazon {
+		return c.prod
+	}
+	return c.dev
 }

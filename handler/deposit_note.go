@@ -3,6 +3,7 @@ package handler
 import (
 	"eps-backend/model"
 	"eps-backend/structs"
+	"eps-backend/utils"
 	"fmt"
 	"io"
 	"net/http"
@@ -28,8 +29,7 @@ func (h *Handler) CreateDeposit(c echo.Context) error {
 		OriginAccount:      originAccount,
 		DestinationAccount: destinationAccount,
 	}
-
-	err := h.depositNoteStore.Create(notes)
+	err := h.depositNoteStore.Create(notes, c.Param("e"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -48,7 +48,7 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 	c.Logger().Info("::GetDeposit::")
 	id := c.Param("id")
 	i, _ := strconv.Atoi(id)
-	note, err := h.depositNoteStore.GetById(i)
+	note, err := h.depositNoteStore.GetById(i, c.Param("e"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -72,7 +72,7 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 
 func (h *Handler) GetDepositCreated(c echo.Context) error {
 	c.Logger().Info("::GetDepositCreated::")
-	note, err := h.depositNoteStore.GetStatusCreated()
+	note, err := h.depositNoteStore.GetStatusCreated(c.Param("e"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -89,7 +89,7 @@ func (h *Handler) GetDepositCreated(c echo.Context) error {
 
 func (h *Handler) GetDepositUploaded(c echo.Context) error {
 	c.Logger().Info("::GetDepositCreated::")
-	note, err := h.depositNoteStore.GetStatusUploaded()
+	note, err := h.depositNoteStore.GetStatusUploaded(c.Param("e"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -106,7 +106,7 @@ func (h *Handler) GetDepositUploaded(c echo.Context) error {
 
 func (h *Handler) GetDepositDone(c echo.Context) error {
 	c.Logger().Info("::GetDepositCreated::")
-	note, err := h.depositNoteStore.GetStatusDone()
+	note, err := h.depositNoteStore.GetStatusDone(c.Param("e"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -126,7 +126,11 @@ func (h *Handler) GetImage(c echo.Context) error {
 	id := c.Param("id")
 
 	// Assuming images are stored in a directory named "uploads"
-	imagePath := "uploads/" + id + ".jpg" // Adjust the file extension as needed
+	envr := c.Param("e")
+	imagePath := "uploads/dev/" + id + ".jpg" // Adjust the file extension as needed
+	if envr == utils.Amazon {
+		imagePath = "uploads/prod/" + id + ".jpg"
+	}
 
 	// Open the image file
 	file, err := os.Open(imagePath)
@@ -157,6 +161,7 @@ func (h *Handler) GetImage(c echo.Context) error {
 func (h *Handler) UpdateDeposit(c echo.Context) error {
 	c.Logger().Info("::UpdateDeposit::")
 	//logic form value
+	envr := c.Param("e")
 	id := c.Param("id")
 	name := c.FormValue("name")
 	supplier := c.FormValue("supplier")
@@ -168,7 +173,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	i, _ := strconv.Atoi(amount)
 	intID, _ := strconv.Atoi(id)
 
-	note, err := h.depositNoteStore.GetById(intID)
+	note, err := h.depositNoteStore.GetById(intID, c.Param("e"))
 	if err != nil {
 		return err
 	}
@@ -181,7 +186,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	}
 
 	// Get the image file from the form
-	var imagepath string
+	var imagePath string
 	file, err := c.FormFile("image")
 	if err != nil {
 		fmt.Println("no image upload")
@@ -198,8 +203,11 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		defer src.Close()
 
 		// Create a destination file
-		imagepath = "uploads/" + id + ".jpg"
-		dst, err := os.Create(imagepath)
+		imagePath = "uploads/dev/" + id + ".jpg" // Adjust the file extension as needed
+		if envr == utils.Amazon {
+			imagePath = "uploads/prod/" + id + ".jpg"
+		}
+		dst, err := os.Create(imagePath)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 				Data:       nil,
@@ -227,14 +235,14 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		Amount:             float64(i),
 		OriginAccount:      originAccount,
 		DestinationAccount: destinationAccount,
-		ImageUpload:        imagepath,
+		ImageUpload:        imagePath,
 		Reply:              reply,
 	}
 	if notes.Reply != "" {
 		notes.Status = "success"
 	}
 	//end of logic
-	err = h.depositNoteStore.Update(notes)
+	err = h.depositNoteStore.Update(notes, envr)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,

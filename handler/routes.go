@@ -34,14 +34,13 @@ func (h *Handler) Register(v1 *echo.Group) {
 	f.POST("/amz/supplier/update", h.UpdateSupplierAmz)
 	f.DELETE("/amz/supplier/delete/:id", h.DeleteSupplierAmz)
 
-	f.POST("/e/deposit", h.CreateDeposit)
-	f.GET("/e/deposit/:id", h.GetDeposit)
-	f.GET("/e/deposit/created", h.GetDepositCreated)
-	f.GET("/e/deposit/uploaded", h.GetDepositUploaded)
-	f.GET("/e/deposit/done", h.GetDepositDone)
-	f.GET("/e/image/:id", h.GetImage)
-	f.POST("/e/deposit/:id", h.UpdateDeposit)
-
+	f.POST("/:e/deposit", h.CreateDeposit)
+	f.GET("/:e/deposit/:id", h.GetDeposit)
+	f.GET("/:e/deposit/created", h.GetDepositCreated)
+	f.GET("/:e/deposit/uploaded", h.GetDepositUploaded)
+	f.GET("/:e/deposit/done", h.GetDepositDone)
+	f.GET("/:e/image/:id", h.GetImage)
+	f.POST("/:e/deposit/:id", h.UpdateDeposit)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

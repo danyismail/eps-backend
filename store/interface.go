@@ -35,10 +35,10 @@ type SupplierStore interface {
 }
 
 type DepositNote interface {
-	Create(notes model.DepositNote) error
-	Update(notes model.DepositNote) error
-	GetById(id int) (*model.DepositNote, error)
-	GetStatusCreated() ([]model.DepositNote, error)
-	GetStatusUploaded() ([]model.DepositNote, error)
-	GetStatusDone() ([]model.DepositNote, error)
+	Create(notes model.DepositNote, path string) error
+	Update(notes model.DepositNote, path string) error
+	GetById(id int, path string) (*model.DepositNote, error)
+	GetStatusCreated(path string) ([]model.DepositNote, error)
+	GetStatusUploaded(path string) ([]model.DepositNote, error)
+	GetStatusDone(path string) ([]model.DepositNote, error)
 }
