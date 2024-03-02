@@ -23,12 +23,14 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	f := v1.Group("/finance")
 	f.GET("/eps/supplier", h.GetSuppliersEps)
+	f.GET("/eps/supplier/active", h.GetSuppliersEActive)
 	f.GET("/eps/supplier/:id", h.GetSupplierByIdEps)
 	f.POST("/eps/supplier/create", h.CreateSupplierEps)
 	f.POST("/eps/supplier/update", h.UpdateSupplierEps)
 	f.DELETE("/eps/supplier/delete/:id", h.DeleteSupplierEps)
 
 	f.GET("/amz/supplier", h.GetSuppliersAmz)
+	f.GET("/amz/supplier/active", h.GetSuppliersAActive)
 	f.GET("/amz/supplier/:id", h.GetSupplierByIdAmz)
 	f.POST("/amz/supplier/create", h.CreateSupplierAmz)
 	f.POST("/amz/supplier/update", h.UpdateSupplierAmz)

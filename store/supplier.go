@@ -43,9 +43,27 @@ func (c *SupplierConstruct) GetSuppliersEps() ([]model.Supplier, error) {
 	return suppliers, nil
 }
 
+func (c *SupplierConstruct) GetSuppliersEActive() ([]model.Supplier, error) {
+	suppliers := []model.Supplier{}
+	sql := "SELECT * FROM suppliers WHERE status = 'active'"
+	if err := c.dev.Debug().Raw(sql).Scan(&suppliers).Error; err != nil {
+		return nil, err
+	}
+	return suppliers, nil
+}
+
 func (c *SupplierConstruct) GetSuppliersAmz() ([]model.Supplier, error) {
 	suppliers := []model.Supplier{}
 	sql := "SELECT * FROM suppliers"
+	if err := c.prod.Debug().Raw(sql).Scan(&suppliers).Error; err != nil {
+		return nil, err
+	}
+	return suppliers, nil
+}
+
+func (c *SupplierConstruct) GetSuppliersAActive() ([]model.Supplier, error) {
+	suppliers := []model.Supplier{}
+	sql := "SELECT * FROM suppliers WHERE status = 'active'"
 	if err := c.prod.Debug().Raw(sql).Scan(&suppliers).Error; err != nil {
 		return nil, err
 	}

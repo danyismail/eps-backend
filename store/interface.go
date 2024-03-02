@@ -25,7 +25,9 @@ type SupplierStore interface {
 	CreateSupplierEps(s model.Supplier) error
 	CreateSupplierAmz(s model.Supplier) error
 	GetSuppliersEps() ([]model.Supplier, error)
+	GetSuppliersEActive() ([]model.Supplier, error)
 	GetSuppliersAmz() ([]model.Supplier, error)
+	GetSuppliersAActive() ([]model.Supplier, error)
 	GetSupplierByIdEps(id int) (model.Supplier, error)
 	GetSupplierByIdAmz(id int) (model.Supplier, error)
 	UpdateSuppliersEps(model.Supplier) error

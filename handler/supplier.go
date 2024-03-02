@@ -27,6 +27,24 @@ func (h *Handler) GetSuppliersEps(c echo.Context) error {
 
 }
 
+func (h *Handler) GetSuppliersEActive(c echo.Context) error {
+	c.Logger().Info("::GetSuppliersEActive Started::")
+	result, err := h.supplierStore.GetSuppliersEActive()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       result,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+
+}
+
 func (h *Handler) GetSupplierByIdEps(c echo.Context) error {
 	c.Logger().Info("::GetSupplierByIdEps Started::")
 	strId := c.Param("id")
