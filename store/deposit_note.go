@@ -40,7 +40,7 @@ func (c *DepositNoteConstruct) GetStatusCreated(path string) ([]model.DepositNot
 
 func (c *DepositNoteConstruct) GetStatusUploaded(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	query := "select * from deposit_notes dn where image_upload <> '';"
+	query := "select * from deposit_notes dn where image_upload <> '' and CAST(reply AS varchar(MAX)) = '';"
 
 	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
@@ -51,7 +51,7 @@ func (c *DepositNoteConstruct) GetStatusUploaded(path string) ([]model.DepositNo
 
 func (c *DepositNoteConstruct) GetStatusDone(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	query := "select * from deposit_notes dn where CAST(reply AS varchar(MAX)) <> '' and image_upload <> '';"
+	query := "select * from deposit_notes dn where image_upload <> '' and CAST(reply AS varchar(MAX)) <> '';"
 	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
