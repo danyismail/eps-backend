@@ -14,7 +14,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalln("Error loading .env file")
+		log.Fatalln("error loading .env file")
 	}
 	devDb, prodDb, err := db.New()
 	if err != nil {
@@ -29,10 +29,8 @@ func main() {
 	h.HttpErrorHandler(r)
 
 	appHost := os.Getenv("APPLICATION_PORT")
-
-	if "" == appHost {
-		log.Fatalln("key of APPLICATION HOST are not define.")
+	if appHost == "" {
+		log.Fatalln("app port is not define.")
 	}
-
 	r.Logger.Fatal(r.Start(":" + appHost))
 }

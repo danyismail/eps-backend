@@ -4,6 +4,7 @@ import (
 	"eps-backend/model"
 	"eps-backend/utils"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -27,10 +28,39 @@ func (c *DepositNoteConstruct) Create(notes model.DepositNote, path string) erro
 	return nil
 }
 
+func (c *DepositNoteConstruct) GetAllStatus(path, date string) ([]model.DepositNote, error) {
+	notes := []model.DepositNote{}
+
+	sql := "SELECT id,FORMAT(created_at, 'dd-MM-yyyy HH:mm:ss') created_at,FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at, deleted_at, name, supplier, amount"
+	sql = fmt.Sprintf(`%s origin_account, destination_account, image_upload, reply, status FROM deposit_notes WHERE FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') = '%s'`, sql, date)
+
+	result := c.SelectConn(path).Debug().Raw(sql).Scan(&notes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return notes, nil
+}
+
 func (c *DepositNoteConstruct) GetStatusCreated(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	query := "select * from deposit_notes dn where image_upload = '';"
-
+	// query := "select * from deposit_notes dn where image_upload = '';"
+	query := `
+	SELECT 
+		id,
+		FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') created_at,
+		FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at,
+		deleted_at,
+		name,
+		supplier,
+		amount,
+		origin_account,
+		destination_account,
+		image_upload,
+		reply,
+		status
+	FROM deposit_notes
+	WHERE status = 'pending';
+	`
 	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
@@ -40,8 +70,24 @@ func (c *DepositNoteConstruct) GetStatusCreated(path string) ([]model.DepositNot
 
 func (c *DepositNoteConstruct) GetStatusUploaded(path string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	query := "select * from deposit_notes dn where image_upload <> '' and CAST(reply AS varchar(MAX)) = '';"
-
+	// query := "select * from deposit_notes dn where image_upload <> '' and CAST(reply AS varchar(MAX)) = '';"
+	query := `
+	SELECT 
+		id,
+		FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') created_at,
+		FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at,
+		deleted_at,
+		name,
+		supplier,
+		amount,
+		origin_account,
+		destination_account,
+		image_upload,
+		reply,
+		status
+	FROM deposit_notes
+	WHERE status = 'process';
+	`
 	result := c.SelectConn(path).Raw(query).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
@@ -49,10 +95,19 @@ func (c *DepositNoteConstruct) GetStatusUploaded(path string) ([]model.DepositNo
 	return notes, nil
 }
 
-func (c *DepositNoteConstruct) GetStatusDone(path string) ([]model.DepositNote, error) {
+func (c *DepositNoteConstruct) GetStatusDone(path, startDt, endDt string) ([]model.DepositNote, error) {
 	notes := []model.DepositNote{}
-	query := "select * from deposit_notes dn where image_upload <> '' and CAST(reply AS varchar(MAX)) <> '';"
-	result := c.SelectConn(path).Raw(query).Scan(&notes)
+
+	whereCondition := " WHERE status = 'success'"
+	sql := "SELECT id,FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') created_at,FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at, deleted_at, name, supplier, amount"
+	sql = fmt.Sprintf("%s origin_account, destination_account, image_upload, reply, status FROM deposit_notes", sql)
+
+	if startDt != "" && endDt != "" {
+		whereCondition = fmt.Sprintf(" WHERE cast(created_at as date) BETWEEN '%s' AND '%s' AND status = 'success'", startDt, endDt)
+	}
+	sql += " " + whereCondition
+
+	result := c.SelectConn(path).Debug().Raw(sql).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -68,6 +123,13 @@ func (c *DepositNoteConstruct) GetById(id int, path string) (*model.DepositNote,
 		return nil, nil
 	}
 	return notes, nil
+}
+
+func (c *DepositNoteConstruct) Delete(id int, path string) error {
+	if err := c.SelectConn(path).Debug().Exec("DELETE FROM deposit_notes WHERE id = ?", id).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *DepositNoteConstruct) Update(notes model.DepositNote, path string) error {

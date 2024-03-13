@@ -49,8 +49,8 @@ type Supplier struct {
 
 type DepositNote struct {
 	ID                 int        `json:"id"`
-	CreatedAt          time.Time  `json:"created_at"`
-	UpdatedAt          time.Time  `json:"updated_at"`
+	CreatedAt          string     `json:"created_at"`
+	UpdatedAt          string     `json:"updated_at"`
 	DeletedAt          *time.Time `json:"deleted_at"`
 	Name               string     `json:"name"`
 	Supplier           string     `json:"supplier"`

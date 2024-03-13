@@ -41,8 +41,10 @@ func (h *Handler) Register(v1 *echo.Group) {
 	f.GET("/:e/deposit/created", h.GetDepositCreated)
 	f.GET("/:e/deposit/uploaded", h.GetDepositUploaded)
 	f.GET("/:e/deposit/done", h.GetDepositDone)
+	f.GET("/:e/deposit/all", h.GetAllDeposit)
 	f.GET("/:e/image/:id", h.GetImage)
 	f.POST("/:e/deposit/:id", h.UpdateDeposit)
+	f.DELETE("/:e/deposit/:id", h.CancelDeposit)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

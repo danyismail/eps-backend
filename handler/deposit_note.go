@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo"
 )
@@ -23,11 +24,14 @@ func (h *Handler) CreateDeposit(c echo.Context) error {
 
 	i, _ := strconv.Atoi(amount)
 	notes := model.DepositNote{
+		CreatedAt:          time.Now().Format("2006-01-02 15:04:05"),
+		UpdatedAt:          time.Now().Format("2006-01-02 15:04:05"),
 		Name:               name,
 		Supplier:           supplier,
 		Amount:             float64(i),
 		OriginAccount:      originAccount,
 		DestinationAccount: destinationAccount,
+		Status:             "pending",
 	}
 	err := h.depositNoteStore.Create(notes, c.Param("e"))
 	if err != nil {
@@ -61,6 +65,70 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
 			Message:    "record not found",
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       note,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}
+
+func (h *Handler) CancelDeposit(c echo.Context) error {
+	c.Logger().Info("::CancelDeposit::")
+	id := c.Param("id")
+	i, _ := strconv.Atoi(id)
+	note, err := h.depositNoteStore.GetById(i, c.Param("e"))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	if note == nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    "record not found",
+		})
+	}
+
+	//delete image
+	err = deleteImage(note.ImageUpload)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+
+	err = h.depositNoteStore.Delete(i, c.Param("e"))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       note,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}
+
+func (h *Handler) GetAllDeposit(c echo.Context) error {
+	c.Logger().Info("::GetAllDeposit::")
+	dt := c.QueryParam("dt")
+	note, err := h.depositNoteStore.GetAllStatus(c.Param("e"), dt)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
@@ -106,7 +174,9 @@ func (h *Handler) GetDepositUploaded(c echo.Context) error {
 
 func (h *Handler) GetDepositDone(c echo.Context) error {
 	c.Logger().Info("::GetDepositCreated::")
-	note, err := h.depositNoteStore.GetStatusDone(c.Param("e"))
+	startDt := c.QueryParam("startDt")
+	endDt := c.QueryParam("endDt")
+	note, err := h.depositNoteStore.GetStatusDone(c.Param("e"), startDt, endDt)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -155,6 +225,29 @@ func (h *Handler) GetImage(c echo.Context) error {
 			Message:    "failed to send image",
 		})
 	}
+	return nil
+}
+
+func (h *Handler) DeleteImage(c echo.Context) error {
+	c.Logger().Info("::GetImage::")
+	id := c.Param("id")
+
+	// Assuming images are stored in a directory named "uploads"
+	envr := c.Param("e")
+	imagePath := "uploads/dev/" + id + ".jpg" // Adjust the file extension as needed
+	if envr == utils.Amazon {
+		imagePath = "uploads/prod/" + id + ".jpg"
+	}
+
+	err := os.Remove(imagePath)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusNotFound,
+			Message:    "image not found",
+		})
+	}
+	c.Logger().Info("delete image from " + imagePath + " successfully")
 	return nil
 }
 
@@ -230,6 +323,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	// Create a notes object
 	notes := model.DepositNote{
 		ID:                 note.ID,
+		UpdatedAt:          time.Now().Format("2006-01-02 15:04:05"),
 		Name:               name,
 		Supplier:           supplier,
 		Amount:             float64(i),
@@ -237,6 +331,9 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		DestinationAccount: destinationAccount,
 		ImageUpload:        imagePath,
 		Reply:              reply,
+	}
+	if notes.ImageUpload != "" {
+		notes.Status = "process"
 	}
 	if notes.Reply != "" {
 		notes.Status = "success"
@@ -255,4 +352,14 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		StatusCode: http.StatusOK,
 		Message:    "success",
 	})
+}
+
+func deleteImage(imagePath string) error {
+	fmt.Println("deleteImage " + imagePath)
+	err := os.Remove(imagePath)
+	if err != nil {
+		return err
+	}
+	fmt.Println("deleteImage " + imagePath + " successfully")
+	return nil
 }

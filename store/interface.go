@@ -40,7 +40,9 @@ type DepositNote interface {
 	Create(notes model.DepositNote, path string) error
 	Update(notes model.DepositNote, path string) error
 	GetById(id int, path string) (*model.DepositNote, error)
+	Delete(id int, path string) error
+	GetAllStatus(path, date string) ([]model.DepositNote, error)
 	GetStatusCreated(path string) ([]model.DepositNote, error)
 	GetStatusUploaded(path string) ([]model.DepositNote, error)
-	GetStatusDone(path string) ([]model.DepositNote, error)
+	GetStatusDone(path, startDt, endDt string) ([]model.DepositNote, error)
 }
