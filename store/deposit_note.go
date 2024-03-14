@@ -32,7 +32,7 @@ func (c *DepositNoteConstruct) GetAllStatus(path, date string) ([]model.DepositN
 	notes := []model.DepositNote{}
 
 	sql := "SELECT id,FORMAT(created_at, 'dd-MM-yyyy HH:mm:ss') created_at,FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at, deleted_at, name, supplier, amount"
-	sql = fmt.Sprintf(`%s origin_account, destination_account, image_upload, reply, status FROM deposit_notes WHERE FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') = '%s'`, sql, date)
+	sql = fmt.Sprintf(`%s origin_account, destination_account, image_upload, reply, status FROM deposit_notes WHERE cast(created_at as DATETIME) = '%s'`, sql, date)
 
 	result := c.SelectConn(path).Debug().Raw(sql).Scan(&notes)
 	if result.Error != nil {
