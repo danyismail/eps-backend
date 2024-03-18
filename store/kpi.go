@@ -84,7 +84,7 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	if err := c.db.Eps.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
+	if err := c.db.DigiEps.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
 		return nil, attr, err
 	}
 

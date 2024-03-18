@@ -50,25 +50,25 @@ func New() (DBConnection, error) {
 	for i, v := range listConnDB {
 		switch i {
 		case 0:
-			db, _ := setConnectionDB("amazone", v)
-			// if err != nil {
-			// 	return instanceDB, err
-			// }
+			db, err := setConnectionDB("digi_amazone", v)
+			if err != nil {
+				return instanceDB, err
+			}
 			instanceDB.DigiAmazone = db
 		case 1:
-			db, _ := setConnectionDB("eps", v)
-			// if err != nil {
-			// 	return instanceDB, err
-			// }
+			db, err := setConnectionDB("digi_eps", v)
+			if err != nil {
+				return instanceDB, err
+			}
 			instanceDB.DigiEps = db
 		case 2:
-			db, err := setConnectionDB("replica amazone", v)
+			db, err := setConnectionDB("replica_amazone", v)
 			if err != nil {
 				return instanceDB, err
 			}
 			instanceDB.Amazone = db
 		case 3:
-			db, err := setConnectionDB("replica eps", v)
+			db, err := setConnectionDB("replica_eps", v)
 			if err != nil {
 				return instanceDB, err
 			}
