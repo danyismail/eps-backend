@@ -16,10 +16,16 @@ func (h *Handler) Register(v1 *echo.Group) {
 	sf.POST("/getKpisProd", h.GetKPIProd)
 	sf.GET("/deposit", h.GetBalance)
 	sf.GET("/depositProd", h.GetBalanceProd)
+	sf.GET("/depositProd", h.GetBalance)
 	sf.GET("/sales", h.GetSales)
-	sf.GET("/salesProd", h.GetSalesProd)
 	sf.GET("/salesPeriode", h.GetSalesPeriode)
+	sf.GET("/salesProd", h.GetSalesProd)
 	sf.GET("/salesPeriodeProd", h.GetSalesPeriodeProd)
+
+	r := v1.Group("/replica")
+	r.GET("/:e/supplier-balance", h.GetSupplierBalance)
+	r.GET("/:e/sales", h.GetSalesReplica)
+	r.GET("/:e/sales-periode", h.GetSalesPeriodeReplica)
 
 	f := v1.Group("/finance")
 	f.GET("/eps/supplier", h.GetSuppliersEps)

@@ -1,6 +1,8 @@
 package store
 
-import "eps-backend/model"
+import (
+	"eps-backend/model"
+)
 
 type KpiStore interface {
 	//data, totalSelectedData, view per page, err
@@ -12,13 +14,16 @@ type KpiStore interface {
 type DepositStore interface {
 	GetBalanceToday() ([]model.CurrentDeposit, error)
 	GetBalanceTodayProd() ([]model.CurrentDeposit, error)
+	GetBalance(conn string) ([]model.CurrentDeposit, error)
 }
 
 type SalesStore interface {
 	GetSalesToday() ([]model.SalesReport, error)
 	GetSalesTodayProd() ([]model.SalesReport, error)
+	GetSalesReplica(path string) ([]model.SalesReport, error)
 	Sales(from, to string) ([]model.SalesReport, error)
 	SalesProd(from, to string) ([]model.SalesReport, error)
+	SalesReplica(path, from, to string) ([]model.SalesReport, error)
 }
 
 type SupplierStore interface {

@@ -1,9 +1,8 @@
 package handler
 
 import (
+	"eps-backend/db"
 	"eps-backend/store"
-
-	"gorm.io/gorm"
 )
 
 type Handler struct {
@@ -14,12 +13,12 @@ type Handler struct {
 	depositNoteStore store.DepositNote
 }
 
-func NewHandler(dev *gorm.DB, prod *gorm.DB) *Handler {
+func NewHandler(db db.DBConnection) *Handler {
 	return &Handler{
-		kpiStore:         store.NewKpiStore(dev, prod),
-		depositStore:     store.NewDepositStore(dev, prod),
-		salesStore:       store.NewSalesStore(dev, prod),
-		supplierStore:    store.NewSupplierStore(dev, prod),
-		depositNoteStore: store.NewDepositNoteStore(dev, prod),
+		kpiStore:         store.NewKpiStore(db),
+		depositStore:     store.NewDepositStore(db),
+		salesStore:       store.NewSalesStore(db),
+		supplierStore:    store.NewSupplierStore(db),
+		depositNoteStore: store.NewDepositNoteStore(db),
 	}
 }

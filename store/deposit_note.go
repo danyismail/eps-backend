@@ -1,6 +1,7 @@
 package store
 
 import (
+	"eps-backend/db"
 	"eps-backend/model"
 	"eps-backend/utils"
 	"errors"
@@ -10,14 +11,12 @@ import (
 )
 
 type DepositNoteConstruct struct {
-	dev  *gorm.DB
-	prod *gorm.DB
+	db db.DBConnection
 }
 
-func NewDepositNoteStore(dev *gorm.DB, prod *gorm.DB) *DepositNoteConstruct {
+func NewDepositNoteStore(db db.DBConnection) *DepositNoteConstruct {
 	return &DepositNoteConstruct{
-		dev,
-		prod,
+		db,
 	}
 }
 
@@ -99,7 +98,7 @@ func (c *DepositNoteConstruct) GetStatusDone(path, startDt, endDt string) ([]mod
 	notes := []model.DepositNote{}
 
 	whereCondition := " WHERE status = 'success'"
-	sql := "SELECT id,FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') created_at,FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at, deleted_at, name, supplier, amount"
+	sql := "SELECT id,FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') created_at,FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at, deleted_at, name, supplier, amount,"
 	sql = fmt.Sprintf("%s origin_account, destination_account, image_upload, reply, status FROM deposit_notes", sql)
 
 	if startDt != "" && endDt != "" {
@@ -144,8 +143,12 @@ func (c *DepositNoteConstruct) Update(notes model.DepositNote, path string) erro
 }
 
 func (c *DepositNoteConstruct) SelectConn(path string) *gorm.DB {
-	if path == utils.Amazon {
-		return c.prod
+	switch path {
+	case utils.DIGI_AMAZONE:
+		return c.db.DigiAmazone
+	case utils.DIGI_EPS:
+		return c.db.DigiEps
+	default:
+		return c.db.DigiEps
 	}
-	return c.dev
 }

@@ -1,23 +1,20 @@
 package store
 
 import (
+	"eps-backend/db"
 	"eps-backend/model"
 	"fmt"
 	"strings"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type KpiConstruct struct {
-	dev  *gorm.DB
-	prod *gorm.DB
+	db db.DBConnection
 }
 
-func NewKpiStore(dev *gorm.DB, prod *gorm.DB) *KpiConstruct {
+func NewKpiStore(db db.DBConnection) *KpiConstruct {
 	return &KpiConstruct{
-		dev,
-		prod,
+		db: db,
 	}
 }
 
@@ -63,21 +60,21 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 
 	//count all data
 	countQuery := strings.Replace(sql, "*", "COUNT(1)", -1)
-	if err := c.dev.Debug().Raw(countQuery).Scan(&attr.Total).Error; err != nil {
+	if err := c.db.DigiEps.Debug().Raw(countQuery).Scan(&attr.Total).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("all kpi : ", attr.Total)
 
 	querySuccess := fmt.Sprintf("%s %s", sql, " AND kpi <= 180")
 	countSuccess := strings.Replace(querySuccess, "*", "COUNT(1)", -1)
-	if err := c.dev.Debug().Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
+	if err := c.db.DigiEps.Debug().Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("success kpi : ", attr.Success)
 
 	queryFailed := fmt.Sprintf("%s %s", sql, " AND kpi > 180")
 	countFailed := strings.Replace(queryFailed, "*", "COUNT(1)", -1)
-	if err := c.dev.Debug().Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
+	if err := c.db.DigiEps.Debug().Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("failed kpi : ", attr.Failed)
@@ -87,7 +84,7 @@ func (c *KpiConstruct) FindAll(startDt string, endDt string, pageNumber int, pag
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	if err := c.dev.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
+	if err := c.db.Eps.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
 		return nil, attr, err
 	}
 
@@ -140,21 +137,21 @@ func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int,
 
 	//count all data
 	countQuery := strings.Replace(sql, "*", "COUNT(1)", -1)
-	if err := c.prod.Debug().Raw(countQuery).Scan(&attr.Total).Error; err != nil {
+	if err := c.db.DigiAmazone.Debug().Raw(countQuery).Scan(&attr.Total).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("all kpi : ", attr.Total)
 
 	querySuccess := fmt.Sprintf("%s %s", sql, " AND kpi <= 180")
 	countSuccess := strings.Replace(querySuccess, "*", "COUNT(1)", -1)
-	if err := c.prod.Debug().Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
+	if err := c.db.DigiAmazone.Debug().Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("success kpi : ", attr.Success)
 
 	queryFailed := fmt.Sprintf("%s %s", sql, " AND kpi > 180")
 	countFailed := strings.Replace(queryFailed, "*", "COUNT(1)", -1)
-	if err := c.prod.Debug().Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
+	if err := c.db.DigiAmazone.Debug().Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("failed kpi : ", attr.Failed)
@@ -164,7 +161,7 @@ func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int,
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	if err := c.prod.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
+	if err := c.db.DigiAmazone.Debug().Raw(sql).Scan(&kpis).Error; err != nil {
 		return nil, attr, err
 	}
 
@@ -177,7 +174,7 @@ func (c *KpiConstruct) FindAllProd(startDt string, endDt string, pageNumber int,
 
 func (c *KpiConstruct) Test() (*[]model.VKpis, error) {
 	modelKpi := []model.VKpis{}
-	result := c.dev.Raw("SELECT TOP 10 * FROM v_kpi").Scan(&modelKpi)
+	result := c.db.DigiEps.Raw("SELECT TOP 10 * FROM v_kpi").Scan(&modelKpi)
 	if result.Error != nil {
 		return nil, result.Error
 	}

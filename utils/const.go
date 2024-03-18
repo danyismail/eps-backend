@@ -1,6 +1,8 @@
 package utils
 
 const (
-	Amazon = "a"
-	Eps    = "e"
+	DIGI_AMAZONE = "a"
+	DIGI_EPS     = "e"
+	AMAZONE      = "amazone"
+	EPS          = "eps"
 )
