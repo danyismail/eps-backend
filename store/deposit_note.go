@@ -21,7 +21,7 @@ func NewDepositNoteStore(db db.DBConnection) *DepositNoteConstruct {
 }
 
 func (c *DepositNoteConstruct) Create(notes model.DepositNote, path string) error {
-	if err := c.SelectConn(path).Debug().Create(&notes).Error; err != nil {
+	if err := c.SelectConn(path).Create(&notes).Error; err != nil {
 		return err
 	}
 	return nil
@@ -33,7 +33,7 @@ func (c *DepositNoteConstruct) GetAllStatus(path, date string) ([]model.DepositN
 	sql := "SELECT id,FORMAT(created_at, 'dd-MM-yyyy HH:mm:ss') created_at,FORMAT(updated_at , 'dd-MM-yyyy HH:mm:ss') updated_at, deleted_at, name, supplier, amount"
 	sql = fmt.Sprintf(`%s origin_account, destination_account, image_upload, reply, status FROM deposit_notes WHERE FORMAT(created_at , 'dd-MM-yyyy HH:mm:ss') = '%s'`, sql, date)
 
-	result := c.SelectConn(path).Debug().Raw(sql).Scan(&notes)
+	result := c.SelectConn(path).Raw(sql).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -106,7 +106,7 @@ func (c *DepositNoteConstruct) GetStatusDone(path, startDt, endDt string) ([]mod
 	}
 	sql += " " + whereCondition
 
-	result := c.SelectConn(path).Debug().Raw(sql).Scan(&notes)
+	result := c.SelectConn(path).Raw(sql).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -115,7 +115,7 @@ func (c *DepositNoteConstruct) GetStatusDone(path, startDt, endDt string) ([]mod
 
 func (c *DepositNoteConstruct) GetById(id int, path string) (*model.DepositNote, error) {
 	notes := new(model.DepositNote)
-	if err := c.SelectConn(path).Debug().Where("id = ?", id).Find(notes).Error; err != nil {
+	if err := c.SelectConn(path).Where("id = ?", id).Find(notes).Error; err != nil {
 		return nil, err
 	}
 	if notes.ID == 0 {
@@ -125,14 +125,14 @@ func (c *DepositNoteConstruct) GetById(id int, path string) (*model.DepositNote,
 }
 
 func (c *DepositNoteConstruct) Delete(id int, path string) error {
-	if err := c.SelectConn(path).Debug().Exec("DELETE FROM deposit_notes WHERE id = ?", id).Error; err != nil {
+	if err := c.SelectConn(path).Exec("DELETE FROM deposit_notes WHERE id = ?", id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
 func (c *DepositNoteConstruct) Update(notes model.DepositNote, path string) error {
-	result := c.SelectConn(path).Debug().Updates(&notes)
+	result := c.SelectConn(path).Updates(&notes)
 	if result.RowsAffected == 0 {
 		return errors.New("no record found")
 	}

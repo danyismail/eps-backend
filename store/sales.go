@@ -20,7 +20,7 @@ func NewSalesStore(db db.DBConnection) *SalesConstruct {
 func (c *SalesConstruct) GetSalesToday() ([]model.SalesReport, error) {
 	salesToday := []model.SalesReport{}
 	sql := "SELECT * FROM v_today_sales"
-	if err := c.db.DigiEps.Debug().Raw(sql).Scan(&salesToday).Error; err != nil {
+	if err := c.db.DigiEps.Raw(sql).Scan(&salesToday).Error; err != nil {
 		return nil, err
 	}
 	return salesToday, nil
@@ -29,7 +29,7 @@ func (c *SalesConstruct) GetSalesToday() ([]model.SalesReport, error) {
 func (c *SalesConstruct) GetSalesTodayProd() ([]model.SalesReport, error) {
 	salesToday := []model.SalesReport{}
 	sql := "SELECT * FROM v_today_sales"
-	if err := c.db.DigiAmazone.Debug().Raw(sql).Scan(&salesToday).Error; err != nil {
+	if err := c.db.DigiAmazone.Raw(sql).Scan(&salesToday).Error; err != nil {
 		return nil, err
 	}
 	return salesToday, nil
@@ -56,7 +56,7 @@ func (c *SalesConstruct) GetSalesReplica(conn string) ([]model.SalesReport, erro
 GROUP BY
 	t.kode_reseller
 	`
-	if err := c.SelectConn(conn).Debug().Raw(sql).Scan(&salesToday).Error; err != nil {
+	if err := c.SelectConn(conn).Raw(sql).Scan(&salesToday).Error; err != nil {
 		return nil, err
 	}
 	return salesToday, nil
@@ -70,7 +70,7 @@ func (c *SalesConstruct) Sales(from, to string) ([]model.SalesReport, error) {
 	sql = fmt.Sprintf("%s WHERE t.status = 20", sql)
 	sql = fmt.Sprintf("%s AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s'", sql, from, to)
 	sql = fmt.Sprintf("%s GROUP BY t.kode_reseller;", sql)
-	if err := c.db.DigiEps.Debug().Raw(sql).Scan(&salesToday).Error; err != nil {
+	if err := c.db.DigiEps.Raw(sql).Scan(&salesToday).Error; err != nil {
 		return nil, err
 	}
 	return salesToday, nil
@@ -84,7 +84,7 @@ func (c *SalesConstruct) SalesProd(from, to string) ([]model.SalesReport, error)
 	sql = fmt.Sprintf("%s WHERE t.status = 20", sql)
 	sql = fmt.Sprintf("%s AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s'", sql, from, to)
 	sql = fmt.Sprintf("%s GROUP BY t.kode_reseller;", sql)
-	if err := c.db.DigiAmazone.Debug().Raw(sql).Scan(&salesToday).Error; err != nil {
+	if err := c.db.DigiAmazone.Raw(sql).Scan(&salesToday).Error; err != nil {
 		return nil, err
 	}
 	return salesToday, nil
@@ -97,7 +97,7 @@ func (c *SalesConstruct) SalesReplica(path, from, to string) ([]model.SalesRepor
 	sql = fmt.Sprintf("%s WHERE t.status = 20", sql)
 	sql = fmt.Sprintf("%s AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s'", sql, from, to)
 	sql = fmt.Sprintf("%s GROUP BY t.kode_reseller;", sql)
-	if err := c.SelectConn(path).Debug().Raw(sql).Scan(&salesToday).Error; err != nil {
+	if err := c.SelectConn(path).Raw(sql).Scan(&salesToday).Error; err != nil {
 		return nil, err
 	}
 	return salesToday, nil

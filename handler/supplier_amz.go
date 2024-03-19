@@ -13,6 +13,7 @@ func (h *Handler) GetSuppliersAmz(c echo.Context) error {
 	c.Logger().Info("::GetSuppliersEps Started::")
 	result, err := h.supplierStore.GetSuppliersAmz()
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -31,6 +32,7 @@ func (h *Handler) GetSuppliersAActive(c echo.Context) error {
 	c.Logger().Info("::GetSuppliersEActive Started::")
 	result, err := h.supplierStore.GetSuppliersAActive()
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -51,6 +53,7 @@ func (h *Handler) GetSupplierByIdAmz(c echo.Context) error {
 	id, _ := strconv.Atoi(strId)
 	result, err := h.supplierStore.GetSupplierByIdAmz(id)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -70,6 +73,7 @@ func (h *Handler) CreateSupplierAmz(c echo.Context) error {
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusBadRequest, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -78,6 +82,7 @@ func (h *Handler) CreateSupplierAmz(c echo.Context) error {
 	}
 	err = h.supplierStore.CreateSupplierAmz(*supplier)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -97,6 +102,7 @@ func (h *Handler) UpdateSupplierAmz(c echo.Context) error {
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusBadRequest, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -105,6 +111,7 @@ func (h *Handler) UpdateSupplierAmz(c echo.Context) error {
 	}
 	err = h.supplierStore.UpdateSuppliersAmz(*supplier)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -125,6 +132,7 @@ func (h *Handler) DeleteSupplierAmz(c echo.Context) error {
 	id, _ := strconv.Atoi(strId)
 	err := h.supplierStore.DeleteSupplierAmz(id)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,

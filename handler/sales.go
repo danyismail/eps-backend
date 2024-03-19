@@ -12,6 +12,7 @@ func (h *Handler) GetSales(c echo.Context) error {
 	c.Logger().Info("::GetSales Started::")
 	result, err := h.salesStore.GetSalesToday()
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -29,6 +30,7 @@ func (h *Handler) GetSalesProd(c echo.Context) error {
 	c.Logger().Info("::GetSales Started::")
 	result, err := h.salesStore.GetSalesTodayProd()
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -46,6 +48,7 @@ func (h *Handler) GetSalesReplica(c echo.Context) error {
 	c.Logger().Info("::GetSalesReplica Started::")
 	result, err := h.salesStore.GetSalesReplica(c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -69,6 +72,7 @@ func (h *Handler) GetSalesPeriode(c echo.Context) error {
 	}
 	result, err := h.salesStore.Sales(startDate, endDate)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -93,6 +97,7 @@ func (h *Handler) GetSalesPeriodeProd(c echo.Context) error {
 	}
 	result, err := h.salesStore.SalesProd(startDate, endDate)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -116,6 +121,7 @@ func (h *Handler) GetSalesPeriodeReplica(c echo.Context) error {
 	}
 	result, err := h.salesStore.SalesReplica(c.Param("e"), startDate, endDate)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,

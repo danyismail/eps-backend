@@ -35,6 +35,7 @@ func (h *Handler) CreateDeposit(c echo.Context) error {
 	}
 	err := h.depositNoteStore.Create(notes, c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -54,6 +55,7 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 	i, _ := strconv.Atoi(id)
 	note, err := h.depositNoteStore.GetById(i, c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -80,6 +82,7 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 	i, _ := strconv.Atoi(id)
 	note, err := h.depositNoteStore.GetById(i, c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -97,6 +100,7 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 	//delete image
 	err = deleteImage(note.ImageUpload)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -106,6 +110,7 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 
 	err = h.depositNoteStore.Delete(i, c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -125,6 +130,7 @@ func (h *Handler) GetAllDeposit(c echo.Context) error {
 	dt := c.QueryParam("dt")
 	note, err := h.depositNoteStore.GetAllStatus(c.Param("e"), dt)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -142,6 +148,7 @@ func (h *Handler) GetDepositCreated(c echo.Context) error {
 	c.Logger().Info("::GetDepositCreated::")
 	note, err := h.depositNoteStore.GetStatusCreated(c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -159,6 +166,7 @@ func (h *Handler) GetDepositUploaded(c echo.Context) error {
 	c.Logger().Info("::GetDepositCreated::")
 	note, err := h.depositNoteStore.GetStatusUploaded(c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -178,6 +186,7 @@ func (h *Handler) GetDepositDone(c echo.Context) error {
 	endDt := c.QueryParam("endDt")
 	note, err := h.depositNoteStore.GetStatusDone(c.Param("e"), startDt, endDt)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -205,6 +214,7 @@ func (h *Handler) GetImage(c echo.Context) error {
 	// Open the image file
 	file, err := os.Open(imagePath)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusNotFound,
@@ -219,6 +229,7 @@ func (h *Handler) GetImage(c echo.Context) error {
 	// Copy the image file to the response
 	_, err = io.Copy(c.Response(), file)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -241,6 +252,7 @@ func (h *Handler) DeleteImage(c echo.Context) error {
 
 	err := os.Remove(imagePath)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusNotFound,
@@ -268,6 +280,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 
 	note, err := h.depositNoteStore.GetById(intID, c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return err
 	}
 	if note == nil {
@@ -282,11 +295,13 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	var imagePath string
 	file, err := c.FormFile("image")
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		fmt.Println("no image upload")
 	} else {
 		// Open the uploaded file
 		src, err := file.Open()
 		if err != nil {
+			h.errorBot.SendMessage(err)
 			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 				Data:       nil,
 				StatusCode: http.StatusInternalServerError,
@@ -302,6 +317,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		}
 		dst, err := os.Create(imagePath)
 		if err != nil {
+			h.errorBot.SendMessage(err)
 			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 				Data:       nil,
 				StatusCode: http.StatusInternalServerError,
@@ -312,6 +328,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 
 		// Copy the uploaded file to the destination file
 		if _, err = io.Copy(dst, src); err != nil {
+			h.errorBot.SendMessage(err)
 			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 				Data:       nil,
 				StatusCode: http.StatusInternalServerError,
@@ -341,6 +358,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	//end of logic
 	err = h.depositNoteStore.Update(notes, envr)
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,

@@ -21,7 +21,7 @@ func NewDepositStore(db db.DBConnection) *DepositConstruct {
 func (c *DepositConstruct) GetBalanceToday() ([]model.CurrentDeposit, error) {
 	depositToday := []model.CurrentDeposit{}
 	sql := "SELECT * FROM v_today_supplier_balances"
-	if err := c.db.DigiEps.Debug().Raw(sql).Scan(&depositToday).Error; err != nil {
+	if err := c.db.DigiEps.Raw(sql).Scan(&depositToday).Error; err != nil {
 		return nil, err
 	}
 	return depositToday, nil
@@ -30,7 +30,7 @@ func (c *DepositConstruct) GetBalanceToday() ([]model.CurrentDeposit, error) {
 func (c *DepositConstruct) GetBalanceTodayProd() ([]model.CurrentDeposit, error) {
 	depositToday := []model.CurrentDeposit{}
 	sql := "SELECT * FROM v_today_supplier_balances"
-	if err := c.db.DigiAmazone.Debug().Raw(sql).Scan(&depositToday).Error; err != nil {
+	if err := c.db.DigiAmazone.Raw(sql).Scan(&depositToday).Error; err != nil {
 		return nil, err
 	}
 	return depositToday, nil
@@ -59,8 +59,9 @@ func (c *DepositConstruct) GetBalance(conn string) ([]model.CurrentDeposit, erro
 		t.kode_modul,
 		m.label,
 		m.saldo
+	order by m.label asc;
 	`
-	if err := c.SwitchDB(conn).Debug().Raw(sql).Scan(&depositToday).Error; err != nil {
+	if err := c.SwitchDB(conn).Raw(sql).Scan(&depositToday).Error; err != nil {
 		return nil, err
 	}
 	return depositToday, nil

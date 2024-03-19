@@ -11,6 +11,7 @@ func (h *Handler) GetSupplierBalance(c echo.Context) error {
 	c.Logger().Info("::GetSupplierBalance Started::")
 	result, err := h.depositStore.GetBalance(c.Param("e"))
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -29,6 +30,7 @@ func (h *Handler) GetBalance(c echo.Context) error {
 	c.Logger().Info("::GetBalance Started::")
 	result, err := h.depositStore.GetBalanceToday()
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,
@@ -47,6 +49,7 @@ func (h *Handler) GetBalanceProd(c echo.Context) error {
 	c.Logger().Info("::GetBalance Started::")
 	result, err := h.depositStore.GetBalanceTodayProd()
 	if err != nil {
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
 			StatusCode: http.StatusInternalServerError,

@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type DBConnection struct {
@@ -52,13 +53,13 @@ func New() (DBConnection, error) {
 		case 0:
 			db, err := setConnectionDB("digi_amazone", v)
 			if err != nil {
-				return instanceDB, err
+				// return instanceDB, err
 			}
 			instanceDB.DigiAmazone = db
 		case 1:
 			db, err := setConnectionDB("digi_eps", v)
 			if err != nil {
-				return instanceDB, err
+				// return instanceDB, err
 			}
 			instanceDB.DigiEps = db
 		case 2:
@@ -79,7 +80,9 @@ func New() (DBConnection, error) {
 }
 
 func setConnectionDB(from, strConn string) (db *gorm.DB, err error) {
-	db, err = gorm.Open(sqlserver.Open(strConn), &gorm.Config{})
+	db, err = gorm.Open(sqlserver.Open(strConn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Error),
+	})
 	if err != nil {
 		log.Printf("error connection from %s with message %v", from, err)
 		return nil, err
