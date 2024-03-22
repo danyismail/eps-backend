@@ -53,13 +53,13 @@ func New() (DBConnection, error) {
 		case 0:
 			db, err := setConnectionDB("digi_amazone", v)
 			if err != nil {
-				// return instanceDB, err
+				return instanceDB, err
 			}
 			instanceDB.DigiAmazone = db
 		case 1:
 			db, err := setConnectionDB("digi_eps", v)
 			if err != nil {
-				// return instanceDB, err
+				return instanceDB, err
 			}
 			instanceDB.DigiEps = db
 		case 2:
@@ -76,6 +76,7 @@ func New() (DBConnection, error) {
 			instanceDB.Eps = db
 		}
 	}
+	log.Println("successfully create all conn")
 	return instanceDB, nil
 }
 

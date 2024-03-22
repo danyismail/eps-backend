@@ -5,6 +5,7 @@ import (
 	"eps-backend/model"
 	"eps-backend/utils"
 	"fmt"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -27,6 +28,7 @@ func (c *SalesConstruct) GetSalesToday() ([]model.SalesReport, error) {
 }
 
 func (c *SalesConstruct) GetSalesTodayProd() ([]model.SalesReport, error) {
+	log.Println("call GetSalesTodayProd")
 	salesToday := []model.SalesReport{}
 	sql := "SELECT * FROM v_today_sales"
 	if err := c.db.DigiAmazone.Raw(sql).Scan(&salesToday).Error; err != nil {

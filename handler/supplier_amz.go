@@ -10,9 +10,10 @@ import (
 )
 
 func (h *Handler) GetSuppliersAmz(c echo.Context) error {
-	c.Logger().Info("::GetSuppliersEps Started::")
+	h.e.Logger.Info("::GetSuppliersAmz Started::")
 	result, err := h.supplierStore.GetSuppliersAmz()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -29,9 +30,10 @@ func (h *Handler) GetSuppliersAmz(c echo.Context) error {
 }
 
 func (h *Handler) GetSuppliersAActive(c echo.Context) error {
-	c.Logger().Info("::GetSuppliersEActive Started::")
+	h.e.Logger.Info("::GetSuppliersEActive Started::")
 	result, err := h.supplierStore.GetSuppliersAActive()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -48,11 +50,12 @@ func (h *Handler) GetSuppliersAActive(c echo.Context) error {
 }
 
 func (h *Handler) GetSupplierByIdAmz(c echo.Context) error {
-	c.Logger().Info("::GetSupplierByIdEps Started::")
+	h.e.Logger.Info("::GetSupplierByIdAmz Started::")
 	strId := c.Param("id")
 	id, _ := strconv.Atoi(strId)
 	result, err := h.supplierStore.GetSupplierByIdAmz(id)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -69,10 +72,11 @@ func (h *Handler) GetSupplierByIdAmz(c echo.Context) error {
 }
 
 func (h *Handler) CreateSupplierAmz(c echo.Context) error {
-	c.Logger().Info("::CreateSupplierEps Started::")
+	h.e.Logger.Info("::CreateSupplierEps Started::")
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusBadRequest, structs.CommonResponse{
 			Data:       nil,
@@ -82,6 +86,7 @@ func (h *Handler) CreateSupplierAmz(c echo.Context) error {
 	}
 	err = h.supplierStore.CreateSupplierAmz(*supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -98,10 +103,11 @@ func (h *Handler) CreateSupplierAmz(c echo.Context) error {
 }
 
 func (h *Handler) UpdateSupplierAmz(c echo.Context) error {
-	c.Logger().Info("::UpdateSupplierEps Started::")
+	h.e.Logger.Info("::UpdateSupplierEps Started::")
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusBadRequest, structs.CommonResponse{
 			Data:       nil,
@@ -111,6 +117,7 @@ func (h *Handler) UpdateSupplierAmz(c echo.Context) error {
 	}
 	err = h.supplierStore.UpdateSuppliersAmz(*supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -127,11 +134,12 @@ func (h *Handler) UpdateSupplierAmz(c echo.Context) error {
 }
 
 func (h *Handler) DeleteSupplierAmz(c echo.Context) error {
-	c.Logger().Info("::GetSupplierByIdEps Started::")
+	h.e.Logger.Info("::GetSupplierByIdEps Started::")
 	strId := c.Param("id")
 	id, _ := strconv.Atoi(strId)
 	err := h.supplierStore.DeleteSupplierAmz(id)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,

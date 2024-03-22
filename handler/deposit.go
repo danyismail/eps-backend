@@ -8,9 +8,10 @@ import (
 )
 
 func (h *Handler) GetSupplierBalance(c echo.Context) error {
-	c.Logger().Info("::GetSupplierBalance Started::")
+	h.e.Logger.Info("::GetSupplierBalance Started::")
 	result, err := h.depositStore.GetBalance(c.Param("e"))
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -27,9 +28,10 @@ func (h *Handler) GetSupplierBalance(c echo.Context) error {
 }
 
 func (h *Handler) GetBalance(c echo.Context) error {
-	c.Logger().Info("::GetBalance Started::")
+	h.e.Logger.Info("::GetBalance Started::")
 	result, err := h.depositStore.GetBalanceToday()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -46,9 +48,10 @@ func (h *Handler) GetBalance(c echo.Context) error {
 }
 
 func (h *Handler) GetBalanceProd(c echo.Context) error {
-	c.Logger().Info("::GetBalance Started::")
+	h.e.Logger.Info("::GetBalance Started::")
 	result, err := h.depositStore.GetBalanceTodayProd()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,

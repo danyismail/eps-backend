@@ -1,13 +1,16 @@
 package router
 
 import (
+	"os"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 )
 
-func New() *echo.Echo {
+func New(file *os.File) *echo.Echo {
 	e := echo.New()
+	e.Logger.SetOutput(file)
 	e.Logger.SetLevel(log.DEBUG)
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())

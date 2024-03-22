@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) GetKPI(c echo.Context) error {
-	c.Logger().Info("::GetKpi Started::")
+	h.e.Logger.Info("::GetKpi Started::")
 	req := structs.PageView{}
 	if err := req.Binding(c); err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
@@ -19,6 +19,7 @@ func (h *Handler) GetKPI(c echo.Context) error {
 	}
 	result, attribute, err := h.kpiStore.FindAll(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Total:       attribute.Total,
@@ -43,9 +44,11 @@ func (h *Handler) GetKPI(c echo.Context) error {
 }
 
 func (h *Handler) GetKPIProd(c echo.Context) error {
-	c.Logger().Info("::GetKpi Started::")
+	h.e.Logger.Info("::GetKpi Started::")
 	req := structs.PageView{}
 	if err := req.Binding(c); err != nil {
+		h.e.Logger.Error(err)
+		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Message:    err.Error(),
 			StatusCode: http.StatusBadRequest,
@@ -54,6 +57,7 @@ func (h *Handler) GetKPIProd(c echo.Context) error {
 	}
 	result, attribute, err := h.kpiStore.FindAllProd(req.StartDt, req.EndDt, req.Page, req.View, req.Mdn, req.Status, req.Shift)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Total:       attribute.Total,
@@ -78,9 +82,10 @@ func (h *Handler) GetKPIProd(c echo.Context) error {
 }
 
 func (h *Handler) MockKPI(c echo.Context) error {
-	c.Logger().Info("::GetKpi Started::")
+	h.e.Logger.Info("::GetKpi Started::")
 	result, err := h.kpiStore.Test()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,

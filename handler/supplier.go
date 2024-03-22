@@ -10,9 +10,10 @@ import (
 )
 
 func (h *Handler) GetSuppliersEps(c echo.Context) error {
-	c.Logger().Info("::GetSuppliersEps Started::")
+	h.e.Logger.Info("::GetSuppliersEps Started::")
 	result, err := h.supplierStore.GetSuppliersEps()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -29,9 +30,10 @@ func (h *Handler) GetSuppliersEps(c echo.Context) error {
 }
 
 func (h *Handler) GetSuppliersEActive(c echo.Context) error {
-	c.Logger().Info("::GetSuppliersEActive Started::")
+	h.e.Logger.Info("::GetSuppliersEActive Started::")
 	result, err := h.supplierStore.GetSuppliersEActive()
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -48,11 +50,12 @@ func (h *Handler) GetSuppliersEActive(c echo.Context) error {
 }
 
 func (h *Handler) GetSupplierByIdEps(c echo.Context) error {
-	c.Logger().Info("::GetSupplierByIdEps Started::")
+	h.e.Logger.Info("::GetSupplierByIdEps Started::")
 	strId := c.Param("id")
 	id, _ := strconv.Atoi(strId)
 	result, err := h.supplierStore.GetSupplierByIdEps(id)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -69,10 +72,11 @@ func (h *Handler) GetSupplierByIdEps(c echo.Context) error {
 }
 
 func (h *Handler) CreateSupplierEps(c echo.Context) error {
-	c.Logger().Info("::CreateSupplierEps Started::")
+	h.e.Logger.Info("::CreateSupplierEps Started::")
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusBadRequest, structs.CommonResponse{
 			Data:       nil,
@@ -82,6 +86,7 @@ func (h *Handler) CreateSupplierEps(c echo.Context) error {
 	}
 	err = h.supplierStore.CreateSupplierEps(*supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -98,10 +103,11 @@ func (h *Handler) CreateSupplierEps(c echo.Context) error {
 }
 
 func (h *Handler) UpdateSupplierEps(c echo.Context) error {
-	c.Logger().Info("::UpdateSupplierEps Started::")
+	h.e.Logger.Info("::UpdateSupplierEps Started::")
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusBadRequest, structs.CommonResponse{
 			Data:       nil,
@@ -111,6 +117,7 @@ func (h *Handler) UpdateSupplierEps(c echo.Context) error {
 	}
 	err = h.supplierStore.UpdateSuppliersEps(*supplier)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,
@@ -127,11 +134,12 @@ func (h *Handler) UpdateSupplierEps(c echo.Context) error {
 }
 
 func (h *Handler) DeleteSupplierEps(c echo.Context) error {
-	c.Logger().Info("::GetSupplierByIdEps Started::")
+	h.e.Logger.Info("::GetSupplierByIdEps Started::")
 	strId := c.Param("id")
 	id, _ := strconv.Atoi(strId)
 	err := h.supplierStore.DeleteSupplierEps(id)
 	if err != nil {
+		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
 		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
 			Data:       nil,

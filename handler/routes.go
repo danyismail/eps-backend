@@ -66,7 +66,7 @@ func (h *Handler) HttpErrorHandler(e *echo.Echo) {
 		rid := c.Response().Header().Get(echo.HeaderXRequestID)
 		report.SetInternal(echo.NewHTTPError(0, "Request ID : "+rid))
 
-		c.Logger().Error(report)
+		h.e.Logger.Error(report)
 
 		if castedObject, ok := err.(validator.ValidationErrors); ok {
 			for _, err := range castedObject {

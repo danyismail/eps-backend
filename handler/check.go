@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) HealthCheck(c echo.Context) error {
-	c.Logger().Info("::HealthCheck Started::")
+	h.e.Logger.Info("::HealthCheck Started::")
 	return c.JSON(http.StatusOK, structs.CommonResponse{
 		Data:       "pong",
 		StatusCode: http.StatusOK,

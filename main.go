@@ -12,19 +12,29 @@ import (
 
 func main() {
 
-	err := godotenv.Load()
+	//set output log file
+	file, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal("Failed to open log file:", err)
+	}
+
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatalln("error loading .env file")
 	}
+
+	//connection pooling
 	listConn, err := db.New()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	r := router.New()
+	defer file.Close()
+
+	r := router.New(file)
 	v1 := r.Group("/api")
 
-	h := handler.NewHandler(listConn)
+	h := handler.NewHandler(listConn, r)
 	h.Register(v1)
 	h.HttpErrorHandler(r)
 
