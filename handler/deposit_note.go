@@ -217,7 +217,7 @@ func (h *Handler) GetImage(c echo.Context) error {
 	// Assuming images are stored in a directory named "uploads"
 	envr := c.Param("e")
 	imagePath := "uploads/dev/" + id + ".jpg" // Adjust the file extension as needed
-	if envr == utils.DIGI_EPS {
+	if envr == utils.DIGI_AMAZONE {
 		imagePath = "uploads/prod/" + id + ".jpg"
 	}
 
