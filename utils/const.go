@@ -1,8 +1,8 @@
 package utils
 
 const (
-	DIGI_AMAZONE = "a"
-	DIGI_EPS     = "e"
-	AMAZONE      = "amazone"
-	EPS          = "eps"
+	DIGI_AMAZONE    = "da"
+	DIGI_EPS        = "de"
+	REPLICA_AMAZONE = "ra"
+	REPLICA_EPS     = "re"
 )

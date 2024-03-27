@@ -6,48 +6,34 @@ import (
 
 type KpiStore interface {
 	//data, totalSelectedData, view per page, err
-	FindAll(startDt, endDt string, page int, view int, mdn string, status int, shift string) (data *[]model.VKpis, attribute model.AttributeKPI, err error)
-	FindAllProd(startDt, endDt string, page int, view int, mdn string, status int, shift string) (data *[]model.VKpis, attribute model.AttributeKPI, err error)
-	Test() (*[]model.VKpis, error)
+	GetAll(path, startDt, endDt string, page int, view int, mdn string, status int, shift string) (data *[]model.VKpis, attribute model.AttributeKPI, err error)
 }
 
 type DepositStore interface {
-	GetBalanceToday() ([]model.CurrentDeposit, error)
-	GetBalanceTodayProd() ([]model.CurrentDeposit, error)
 	GetBalance(conn string) ([]model.CurrentDeposit, error)
 }
 
 type SalesStore interface {
-	GetSalesToday() ([]model.SalesReport, error)
-	GetSalesTodayProd() ([]model.SalesReport, error)
-	GetSalesReplica(path string) ([]model.SalesReport, error)
-	Sales(from, to string) ([]model.SalesReport, error)
-	SalesProd(from, to string) ([]model.SalesReport, error)
-	SalesReplica(path, from, to string) ([]model.SalesReport, error)
+	GetSales(path string) ([]model.SalesReport, error)
+	GetSalesPeriode(path, from, to string) ([]model.SalesReport, error)
 }
 
 type SupplierStore interface {
-	CreateSupplierEps(s model.Supplier) error
-	CreateSupplierAmz(s model.Supplier) error
-	GetSuppliersEps() ([]model.Supplier, error)
-	GetSuppliersEActive() ([]model.Supplier, error)
-	GetSuppliersAmz() ([]model.Supplier, error)
-	GetSuppliersAActive() ([]model.Supplier, error)
-	GetSupplierByIdEps(id int) (model.Supplier, error)
-	GetSupplierByIdAmz(id int) (model.Supplier, error)
-	UpdateSuppliersEps(model.Supplier) error
-	UpdateSuppliersAmz(model.Supplier) error
-	DeleteSupplierEps(id int) error
-	DeleteSupplierAmz(id int) error
+	GetSuppliers(path string) ([]model.Supplier, error)
+	GetActiveSuppliers(path string) ([]model.Supplier, error)
+	CreateSupplier(path string, spl model.Supplier) error
+	GetSupplierById(path string, id int) (model.Supplier, error)
+	UpdateSupplier(path string, spl model.Supplier) error
+	DeleteSupplier(path string, id int) error
 }
 
 type DepositNote interface {
-	Create(notes model.DepositNote, path string) error
-	Update(notes model.DepositNote, path string) error
-	GetById(id int, path string) (*model.DepositNote, error)
-	Delete(id int, path string) error
 	GetAllStatus(path, date string) ([]model.DepositNote, error)
 	GetStatusCreated(path string) ([]model.DepositNote, error)
 	GetStatusUploaded(path string) ([]model.DepositNote, error)
 	GetStatusDone(path, startDt, endDt string) ([]model.DepositNote, error)
+	Create(path string, notes model.DepositNote) error
+	GetById(path string, id int) (*model.DepositNote, error)
+	Update(path string, notes model.DepositNote) error
+	Delete(path string, id int) error
 }

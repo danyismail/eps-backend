@@ -9,9 +9,9 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (h *Handler) GetSuppliersEps(c echo.Context) error {
-	h.e.Logger.Info("::GetSuppliersEps Started::")
-	result, err := h.supplierStore.GetSuppliersEps()
+func (h *Handler) GetSuppliers(c echo.Context) error {
+	h.e.Logger.Info("::GetSuppliers Started::")
+	result, err := h.supplierStore.GetSuppliers(c.Param("e"))
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -29,9 +29,9 @@ func (h *Handler) GetSuppliersEps(c echo.Context) error {
 
 }
 
-func (h *Handler) GetSuppliersEActive(c echo.Context) error {
+func (h *Handler) GetActiveSuppliers(c echo.Context) error {
 	h.e.Logger.Info("::GetSuppliersEActive Started::")
-	result, err := h.supplierStore.GetSuppliersEActive()
+	result, err := h.supplierStore.GetActiveSuppliers(c.Param("e"))
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -49,11 +49,11 @@ func (h *Handler) GetSuppliersEActive(c echo.Context) error {
 
 }
 
-func (h *Handler) GetSupplierByIdEps(c echo.Context) error {
-	h.e.Logger.Info("::GetSupplierByIdEps Started::")
+func (h *Handler) GetSupplierById(c echo.Context) error {
+	h.e.Logger.Info("::GetSupplierById Started::")
 	strId := c.Param("id")
 	id, _ := strconv.Atoi(strId)
-	result, err := h.supplierStore.GetSupplierByIdEps(id)
+	result, err := h.supplierStore.GetSupplierById(c.Param("e"), id)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -71,8 +71,8 @@ func (h *Handler) GetSupplierByIdEps(c echo.Context) error {
 
 }
 
-func (h *Handler) CreateSupplierEps(c echo.Context) error {
-	h.e.Logger.Info("::CreateSupplierEps Started::")
+func (h *Handler) CreateSupplier(c echo.Context) error {
+	h.e.Logger.Info("::CreateSupplier Started::")
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
@@ -84,7 +84,7 @@ func (h *Handler) CreateSupplierEps(c echo.Context) error {
 			Message:    err.Error(),
 		})
 	}
-	err = h.supplierStore.CreateSupplierEps(*supplier)
+	err = h.supplierStore.CreateSupplier(c.Param("e"), *supplier)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -102,8 +102,8 @@ func (h *Handler) CreateSupplierEps(c echo.Context) error {
 
 }
 
-func (h *Handler) UpdateSupplierEps(c echo.Context) error {
-	h.e.Logger.Info("::UpdateSupplierEps Started::")
+func (h *Handler) UpdateSupplier(c echo.Context) error {
+	h.e.Logger.Info("::UpdateSupplier Started::")
 	supplier := new(model.Supplier)
 	err := c.Bind(supplier)
 	if err != nil {
@@ -115,7 +115,7 @@ func (h *Handler) UpdateSupplierEps(c echo.Context) error {
 			Message:    err.Error(),
 		})
 	}
-	err = h.supplierStore.UpdateSuppliersEps(*supplier)
+	err = h.supplierStore.UpdateSupplier(c.Param("e"), *supplier)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -133,11 +133,11 @@ func (h *Handler) UpdateSupplierEps(c echo.Context) error {
 
 }
 
-func (h *Handler) DeleteSupplierEps(c echo.Context) error {
-	h.e.Logger.Info("::GetSupplierByIdEps Started::")
+func (h *Handler) DeleteSupplier(c echo.Context) error {
+	h.e.Logger.Info("::DeleteSupplier Started::")
 	strId := c.Param("id")
 	id, _ := strconv.Atoi(strId)
-	err := h.supplierStore.DeleteSupplierEps(id)
+	err := h.supplierStore.DeleteSupplier(c.Param("e"), id)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)

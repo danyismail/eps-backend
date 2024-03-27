@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -22,6 +23,7 @@ func New() (DBConnection, error) {
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_HOST_REPLICA := os.Getenv("DB_HOST_REPLICA")
 	DB_PORT := os.Getenv("DB_PORT")
+	DB_PORT_REPLICA := os.Getenv("DB_PORT_REPLICA")
 	//EPS
 	DATABASE_EPS := os.Getenv("DB_EPS")
 	PASSWORD_EPS := os.Getenv("DB_PASSWORD_EPS")
@@ -41,11 +43,13 @@ func New() (DBConnection, error) {
 	}
 
 	listConnDB := []string{
-		"server=" + DB_HOST + ";user id=" + DATABASE_AMAZONE + ";password=" + PASSWORD_AMAZONE + ";encrypt=disable;database=" + DATABASE_AMAZONE,
-		"server=" + DB_HOST + ";user id=" + DATABASE_EPS + ";password=" + PASSWORD_EPS + ";encrypt=disable;database=" + DATABASE_EPS,
-		"server=" + DB_HOST_REPLICA + ";user id=" + USER_AMAZONE_REPLICA + ";password=" + PASSWORD_AMAZONE_REPLICA + ";encrypt=disable;database=" + DATABASE_AMAZONE_REPLICA,
-		"server=" + DB_HOST_REPLICA + ";user id=" + USER_EPS_REPLICA + ";password=" + PASSWORD_EPS_REPLICA + ";encrypt=disable;database=" + DATABASE_EPS_REPLICA,
+		"server=" + DB_HOST + "," + DB_PORT + ";user id=" + DATABASE_AMAZONE + ";password=" + PASSWORD_AMAZONE + ";encrypt=disable;database=" + DATABASE_AMAZONE,
+		"server=" + DB_HOST + "," + DB_PORT + ";user id=" + DATABASE_EPS + ";password=" + PASSWORD_EPS + ";encrypt=disable;database=" + DATABASE_EPS,
+		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USER_AMAZONE_REPLICA + ";password=" + PASSWORD_AMAZONE_REPLICA + ";encrypt=disable;database=" + DATABASE_AMAZONE_REPLICA,
+		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USER_EPS_REPLICA + ";password=" + PASSWORD_EPS_REPLICA + ";encrypt=disable;database=" + DATABASE_EPS_REPLICA,
 	}
+
+	fmt.Println(listConnDB)
 
 	instanceDB := DBConnection{}
 	for i, v := range listConnDB {

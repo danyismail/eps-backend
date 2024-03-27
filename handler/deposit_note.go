@@ -33,7 +33,7 @@ func (h *Handler) CreateDeposit(c echo.Context) error {
 		DestinationAccount: destinationAccount,
 		Status:             "pending",
 	}
-	err := h.depositNoteStore.Create(notes, c.Param("e"))
+	err := h.depositNoteStore.Create(c.Param("e"), notes)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -54,7 +54,7 @@ func (h *Handler) GetDeposit(c echo.Context) error {
 	h.e.Logger.Info("::GetDeposit::")
 	id := c.Param("id")
 	i, _ := strconv.Atoi(id)
-	note, err := h.depositNoteStore.GetById(i, c.Param("e"))
+	note, err := h.depositNoteStore.GetById(c.Param("e"), i)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -83,7 +83,7 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 	h.e.Logger.Info("::CancelDeposit::")
 	id := c.Param("id")
 	i, _ := strconv.Atoi(id)
-	note, err := h.depositNoteStore.GetById(i, c.Param("e"))
+	note, err := h.depositNoteStore.GetById(c.Param("e"), i)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -114,7 +114,7 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 		})
 	}
 
-	err = h.depositNoteStore.Delete(i, c.Param("e"))
+	err = h.depositNoteStore.Delete(c.Param("e"), i)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -291,7 +291,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	i, _ := strconv.Atoi(amount)
 	intID, _ := strconv.Atoi(id)
 
-	note, err := h.depositNoteStore.GetById(intID, c.Param("e"))
+	note, err := h.depositNoteStore.GetById(c.Param("e"), intID)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -374,7 +374,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 		notes.Status = "success"
 	}
 	//end of logic
-	err = h.depositNoteStore.Update(notes, envr)
+	err = h.depositNoteStore.Update(envr, notes)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
