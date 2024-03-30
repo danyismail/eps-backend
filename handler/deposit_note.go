@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo"
@@ -401,8 +402,10 @@ func (h *Handler) deleteImage(imagePath string) error {
 
 	err := os.Remove(imagePath)
 	if err != nil {
-		h.e.Logger.Print("failed to delete image ", imagePath, " with error", err.Error())
-		return err
+		if !strings.Contains(err.Error(), "no such file or directory") {
+			h.e.Logger.Print("failed to delete image ", imagePath, " with error", err.Error())
+			return err
+		}
 	}
 	h.e.Logger.Print("deleteImage " + imagePath + " successfully")
 	return nil
