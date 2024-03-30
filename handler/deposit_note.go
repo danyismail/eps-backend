@@ -102,7 +102,7 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 	}
 
 	//delete image
-	err = deleteImage(note.ImageUpload)
+	err = h.deleteImage(note.ImageUpload)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
