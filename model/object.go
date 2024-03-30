@@ -59,4 +59,5 @@ type DepositNote struct {
 	ImageUpload        string     `json:"image_upload"`
 	Reply              string     `json:"reply"`
 	Status             string     `json:"status"`
+	PaymentPurpose     string     `json:"payment_purpose"`
 }

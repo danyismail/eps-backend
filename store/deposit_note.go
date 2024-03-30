@@ -95,9 +95,9 @@ func (c *DepositNoteConstruct) GetStatusDone(path, startDt, endDt string) ([]mod
 	if startDt != "" && endDt != "" {
 		whereCondition = fmt.Sprintf(" WHERE cast(created_at as date) BETWEEN '%s' AND '%s' AND status = 'success'", startDt, endDt)
 	}
-	sql += " " + whereCondition
+	sql += " " + whereCondition + " ORDER BY created_at DESC"
 
-	result := utils.SelectConn(path, c.db).Raw(sql).Scan(&notes)
+	result := utils.SelectConn(path, c.db).Debug().Raw(sql).Scan(&notes)
 	if result.Error != nil {
 		return nil, result.Error
 	}
