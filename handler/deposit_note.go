@@ -5,7 +5,6 @@ import (
 	"eps-backend/structs"
 	"eps-backend/utils"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -391,16 +390,18 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	})
 }
 
-func deleteImage(imagePath string) error {
-	log.Println("deleteImage " + imagePath)
+func (h *Handler) deleteImage(imagePath string) error {
+	h.e.Logger.Print("image path : " + imagePath)
+
 	dir, _ := os.Getwd()
 	imagePath = dir + "/" + imagePath
-	log.Println(imagePath)
+	h.e.Logger.Print("full path : " + imagePath)
+
 	err := os.Remove(imagePath)
 	if err != nil {
-		log.Println("failed to delete image ", imagePath)
+		h.e.Logger.Print("failed to delete image ", imagePath)
 		return err
 	}
-	log.Println("deleteImage " + imagePath + " successfully")
+	h.e.Logger.Print("deleteImage " + imagePath + " successfully")
 	return nil
 }
