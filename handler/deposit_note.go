@@ -4,8 +4,8 @@ import (
 	"eps-backend/model"
 	"eps-backend/structs"
 	"eps-backend/utils"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -392,11 +392,15 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 }
 
 func deleteImage(imagePath string) error {
-	fmt.Println("deleteImage " + imagePath)
+	log.Println("deleteImage " + imagePath)
+	dir, _ := os.Getwd()
+	imagePath = dir + "/" + imagePath
+	log.Println(imagePath)
 	err := os.Remove(imagePath)
 	if err != nil {
+		log.Println("failed to delete image ", imagePath)
 		return err
 	}
-	fmt.Println("deleteImage " + imagePath + " successfully")
+	log.Println("deleteImage " + imagePath + " successfully")
 	return nil
 }
