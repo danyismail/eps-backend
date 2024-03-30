@@ -101,16 +101,18 @@ func (h *Handler) CancelDeposit(c echo.Context) error {
 		})
 	}
 
-	//delete image
-	err = h.deleteImage(note.ImageUpload)
-	if err != nil {
-		h.e.Logger.Error(err)
-		h.errorBot.SendMessage(err)
-		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Data:       nil,
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
-		})
+	//only delete if image exist
+	if note.ImageUpload != "" {
+		err = h.deleteImage(note.ImageUpload)
+		if err != nil {
+			h.e.Logger.Error(err)
+			h.errorBot.SendMessage(err)
+			return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+				Data:       nil,
+				StatusCode: http.StatusInternalServerError,
+				Message:    err.Error(),
+			})
+		}
 	}
 
 	err = h.depositNoteStore.Delete(c.Param("e"), i)
