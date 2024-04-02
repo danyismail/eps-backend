@@ -37,3 +37,8 @@ type DepositNote interface {
 	Update(path string, notes model.DepositNote) error
 	Delete(path string, id int) error
 }
+
+type SNStore interface {
+	GetNullableSN(path string) ([]model.ValidateSN, error)
+	GetDuplicateSN(path string) ([]model.DuplicateSN, error)
+}

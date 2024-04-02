@@ -38,6 +38,10 @@ func (h *Handler) Register(v1 *echo.Group) {
 	deposit.GET("/:e/image/:id", h.GetImage)
 	deposit.POST("/:e/update/:id", h.UpdateDeposit)
 	deposit.GET("/:e/delete/:id", h.CancelDeposit)
+
+	sn := v1.Group("/sn")
+	sn.GET("/null/:target", h.CheckSN)
+	sn.GET("/duplicate/:target", h.DuplicateSN)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {

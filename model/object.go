@@ -61,3 +61,19 @@ type DepositNote struct {
 	Status             string     `json:"status"`
 	PaymentPurpose     string     `json:"payment_purpose"`
 }
+
+type ValidateSN struct {
+	KodeReseller string `json:"kode_reseller"`
+	KodeProduk   string `json:"kode_produk"`
+	Tujuan       string `json:"tujuan"`
+	TglEntri     string `json:"tgl_entri"`
+	TglStatus    string `json:"tgl_status"`
+	SN           string `json:"sn"`
+	SelisihWaktu string `json:"selisih_waktu"`
+}
+
+type DuplicateSN struct {
+	SN     string `json:"sn"`
+	Tujuan string `json:"tujuan"`
+	Total  string `json:"total"`
+}

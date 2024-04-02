@@ -69,13 +69,13 @@ func New() (DBConnection, error) {
 		case 2:
 			db, err := setConnectionDB("replica_amazone", v)
 			if err != nil {
-				return instanceDB, err
+				// return instanceDB, err
 			}
 			instanceDB.Amazone = db
 		case 3:
 			db, err := setConnectionDB("replica_eps", v)
 			if err != nil {
-				return instanceDB, err
+				// return instanceDB, err
 			}
 			instanceDB.Eps = db
 		}
