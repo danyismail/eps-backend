@@ -23,8 +23,8 @@ func (c *SNConstruct) GetNullableSN(path string) ([]model.ValidateSN, error) {
 			kode_reseller, 
 			kode_produk ,
 			tujuan,
-			tgl_entri,
-			tgl_status,
+			FORMAT(tgl_entri, 'dd-MM-yyyy HH:mm:ss') tgl_entri,
+			FORMAT(tgl_status, 'dd-MM-yyyy HH:mm:ss') tgl_status,
 			sn,
 			CONCAT(
 				LEFT(CONVERT(VARCHAR(8), DATEADD(SECOND, DATEDIFF(SECOND, tgl_status, GETDATE()), 0), 108), 2), ' jam ',
