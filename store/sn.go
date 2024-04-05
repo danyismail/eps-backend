@@ -20,25 +20,28 @@ func (c *SNConstruct) GetNullableSN(path string) ([]model.ValidateSN, error) {
 	var nullSN []model.ValidateSN
 	query := `
 		select
-			kode_reseller, 
-			kode_produk ,
-			tujuan,
-			FORMAT(tgl_entri, 'dd-MM-yyyy HH:mm:ss') tgl_entri,
-			FORMAT(tgl_status, 'dd-MM-yyyy HH:mm:ss') tgl_status,
-			sn,
+			t.kode_reseller, 
+			t.kode_produk ,
+			t.tujuan,
+			FORMAT(t.tgl_entri, 'dd-MM-yyyy HH:mm:ss') tgl_entri,
+			FORMAT(t.tgl_status, 'dd-MM-yyyy HH:mm:ss') tgl_status,
+			m.label,
+			t.sn,
 			CONCAT(
 				LEFT(CONVERT(VARCHAR(8), DATEADD(SECOND, DATEDIFF(SECOND, tgl_status, GETDATE()), 0), 108), 2), ' jam ',
 				SUBSTRING(CONVERT(VARCHAR(8), DATEADD(SECOND, DATEDIFF(SECOND, tgl_status, GETDATE()), 0), 108), 4, 2), ' menit'
 			) AS selisih_waktu
 		from
 			transaksi t
+		join modul m
+			on t.kode_modul = m.kode
 		where
-			(status = 20
+			(t.status = 20
 				and 
-		tgl_entri BETWEEN CAST(CONVERT(date,
+		t.tgl_entri BETWEEN CAST(CONVERT(date,
 				DATEADD(day, -1, GETDATE())) AS datetime)
 					AND GETDATE())
-			AND sn in(
+			AND t.sn in(
 			NULL,
 			'N/A',
 			'SALDO',
@@ -55,7 +58,7 @@ func (c *SNConstruct) GetNullableSN(path string) ([]model.ValidateSN, error) {
 			'RECON'
 		);
 	`
-	if err := utils.SelectConn(path, c.db).Raw(query).Scan(&nullSN).Error; err != nil {
+	if err := utils.SelectConn(path, c.db).Debug().Raw(query).Scan(&nullSN).Error; err != nil {
 		return nil, err
 	}
 	return nullSN, nil

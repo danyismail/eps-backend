@@ -68,6 +68,7 @@ type ValidateSN struct {
 	Tujuan       string `json:"tujuan"`
 	TglEntri     string `json:"tgl_entri"`
 	TglStatus    string `json:"tgl_status"`
+	Label        string `json:"supplier"`
 	SN           string `json:"sn"`
 	SelisihWaktu string `json:"selisih_waktu"`
 }
