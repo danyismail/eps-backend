@@ -312,7 +312,7 @@ func (h *Handler) UpdateDeposit(c echo.Context) error {
 	var imagePath string
 	file, err := c.FormFile("image")
 	if err != nil {
-		h.e.Logger.Error(err)
+		h.e.Logger.Error(err, " read image attach from request")
 		h.errorBot.SendMessage(err)
 	} else {
 		// Open the uploaded file
