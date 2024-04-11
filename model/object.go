@@ -78,3 +78,10 @@ type DuplicateSN struct {
 	Tujuan string `json:"tujuan"`
 	Total  string `json:"total"`
 }
+
+type LabaReseller struct {
+	KodeProduk   string `json:"kode_produk"`
+	Trx          string `json:"trx"`
+	KodeReseller string `json:"kode_reseller"`
+	Laba         string `json:"laba"`
+}

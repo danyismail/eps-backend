@@ -42,6 +42,9 @@ func (h *Handler) Register(v1 *echo.Group) {
 	sn := v1.Group("/sn")
 	sn.GET("/null/:target", h.CheckSN)
 	sn.GET("/duplicate/:target", h.DuplicateSN)
+
+	reseller := v1.Group("/reseller")
+	reseller.GET("/:e/laba", h.GetLabaReseller)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {
