@@ -42,3 +42,7 @@ type SNStore interface {
 	GetNullableSN(path string) ([]model.ValidateSN, error)
 	GetDuplicateSN(path string) ([]model.DuplicateSN, error)
 }
+
+type ResellerStore interface {
+	GetLaba(path, startDt, endDt, id string) ([]model.LabaReseller, error)
+}
