@@ -83,5 +83,6 @@ type LabaReseller struct {
 	KodeProduk   string `json:"kode_produk"`
 	Trx          string `json:"trx"`
 	KodeReseller string `json:"kode_reseller"`
+	Nama         string `json:"nama"`
 	Laba         string `json:"laba"`
 }
