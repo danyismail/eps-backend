@@ -45,6 +45,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	reseller := v1.Group("/reseller")
 	reseller.GET("/:e/laba", h.GetLabaReseller)
+	reseller.GET("/:e/test", h.Test)
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {
