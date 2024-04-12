@@ -27,10 +27,10 @@ func (c *ResellerConstruct) GetLaba(path, startDt, endDt, id string) ([]model.La
 		endDt = time.Now().Format("2006-01-02")
 	}
 
-	sql := "SELECT t.kode_produk, COUNT(1) trx, t.kode_reseller, CONVERT(INT, SUM(harga-harga_beli)) laba"
+	sql := "SELECT t.kode_produk, COUNT(1) trx, t.kode_reseller, nama, CONVERT(INT, SUM(harga-harga_beli)) laba"
 	sql = fmt.Sprintf("%s FROM transaksi t JOIN reseller r ON t.kode_reseller = r.kode WHERE t.kode_reseller = '%s' AND CAST(tgl_entri AS DATE) BETWEEN '%s' AND '%s'", sql, id, startDt, endDt)
 	sql = fmt.Sprintf("%s AND status = %d", sql, 20)
-	sql = fmt.Sprintf("%s GROUP BY t.kode_reseller, t.kode_produk ORDER BY t.kode_produk", sql)
+	sql = fmt.Sprintf("%s GROUP BY t.kode_reseller, nama, t.kode_produk ORDER BY t.kode_produk", sql)
 
 	conn := utils.SelectConn(path, c.db)
 	if err := conn.Raw(sql).Scan(&labaReseller).Error; err != nil {
