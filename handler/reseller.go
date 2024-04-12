@@ -29,13 +29,3 @@ func (h *Handler) GetLabaReseller(c echo.Context) error {
 	})
 
 }
-
-func (h *Handler) Test(c echo.Context) error {
-	h.e.Logger.Info("::Test Started::")
-
-	return c.JSON(http.StatusOK, structs.CommonResponse{
-		Data:       "test",
-		StatusCode: http.StatusOK,
-		Message:    "success",
-	})
-}
