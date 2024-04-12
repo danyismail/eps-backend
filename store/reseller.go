@@ -33,7 +33,7 @@ func (c *ResellerConstruct) GetLaba(path, startDt, endDt, id string) ([]model.La
 	sql = fmt.Sprintf("%s GROUP BY t.kode_reseller, nama, t.kode_produk ORDER BY t.kode_produk", sql)
 
 	conn := utils.SelectConn(path, c.db)
-	if err := conn.Raw(sql).Scan(&labaReseller).Error; err != nil {
+	if err := conn.Debug().Raw(sql).Scan(&labaReseller).Error; err != nil {
 		return nil, err
 	}
 
