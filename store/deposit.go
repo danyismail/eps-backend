@@ -35,6 +35,7 @@ func (c *DepositConstruct) GetBalance(path string) ([]model.CurrentDeposit, erro
 		GETDATE()))) AND (
 		SELECT
 			CAST(GETDATE() AS DATETIME))
+		AND t.status = 20
 	group by
 		t.kode_modul,
 		m.label,
