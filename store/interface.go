@@ -46,4 +46,5 @@ type SNStore interface {
 type ResellerStore interface {
 	GetLaba(path, startDt, endDt, id string) ([]model.LabaReseller, error)
 	GetSum(path, startDt, endDt, id string) (*model.SumLabaReseller, error)
+	GetList(path, arg string) ([]model.Reseller, error)
 }

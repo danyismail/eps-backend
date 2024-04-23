@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"eps-backend/model"
 	"eps-backend/structs"
 	"net/http"
 
@@ -36,6 +37,37 @@ func (h *Handler) GetSummaryReseller(c echo.Context) error {
 	endDt := c.QueryParam("endDt")
 	resellerID := c.QueryParam("id")
 	result, err := h.resellerStore.GetSum(c.Param("e"), startDt, endDt, resellerID)
+	if err != nil {
+		h.e.Logger.Error(err)
+		h.errorBot.SendMessage(err)
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       result,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+
+}
+
+func (h *Handler) ListSupplier(c echo.Context) error {
+	h.e.Logger.Info("::ListSupplier Started::")
+	param := model.ResellerParam{}
+	err := c.Bind(&param)
+	if err != nil {
+		h.e.Logger.Error(err)
+		h.errorBot.SendMessage(err)
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	result, err := h.resellerStore.GetList(c.Param("e"), param.Search)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)

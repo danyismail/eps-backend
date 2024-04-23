@@ -79,11 +79,20 @@ type DuplicateSN struct {
 	Total  string `json:"total"`
 }
 
+type Reseller struct {
+	Kode string `json:"kode"`
+	Nama string `json:"nama"`
+}
+
 type LabaReseller struct {
 	KodeProduk   string  `json:"kode_produk"`
 	Trx          int     `json:"trx"`
 	KodeReseller string  `json:"kode_reseller"`
 	Laba         float64 `json:"laba"`
+}
+
+type ResellerParam struct {
+	Search string
 }
 
 type SumLabaReseller struct {

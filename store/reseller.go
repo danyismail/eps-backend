@@ -63,3 +63,15 @@ func (c *ResellerConstruct) GetSum(path, startDt, endDt, id string) (*model.SumL
 
 	return &labaReseller, nil
 }
+
+func (c *ResellerConstruct) GetList(path, arg string) ([]model.Reseller, error) {
+	list := []model.Reseller{}
+	likeStart := "'%"
+	likeEnd := "%'"
+	sql := fmt.Sprintf("select kode,nama from reseller r where r.kode like %s%s%s or r.nama like %s%s%s ;", likeStart, arg, likeEnd, likeStart, arg, likeEnd)
+	conn := utils.SelectConn(path, c.db)
+	if err := conn.Raw(sql).Debug().Scan(&list).Error; err != nil {
+		return nil, err
+	}
+	return list, nil
+}
