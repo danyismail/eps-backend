@@ -39,3 +39,39 @@ func (c *ResellerConstruct) GetLaba(path, startDt, endDt, id string) ([]model.La
 
 	return labaReseller, nil
 }
+
+func (c *ResellerConstruct) GetSum(path, startDt, endDt, id string) (*model.SumLabaReseller, error) {
+	var labaReseller model.SumLabaReseller
+
+	if startDt == "" {
+		startDt = time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+	}
+
+	if endDt == "" {
+		endDt = time.Now().Format("2006-01-02")
+	}
+
+	sql := "SELECT r.nama,COUNT(1) trx,CONVERT(INT, sum(harga - harga_beli)) laba"
+	sql = fmt.Sprintf("%s FROM transaksi t JOIN reseller r ON t.kode_reseller = r.kode WHERE t.kode_reseller = '%s' AND CAST(tgl_entri AS DATE) BETWEEN '%s' AND '%s'", sql, id, startDt, endDt)
+	sql = fmt.Sprintf("%s AND status = %d", sql, 20)
+	sql = fmt.Sprintf("%s GROUP BY r.nama", sql)
+
+	conn := utils.SelectConn(path, c.db)
+	if err := conn.Raw(sql).Scan(&labaReseller).Error; err != nil {
+		return nil, err
+	}
+
+	return &labaReseller, nil
+}
+
+func (c *ResellerConstruct) GetList(path, arg string) ([]model.Reseller, error) {
+	list := []model.Reseller{}
+	likeStart := "'%"
+	likeEnd := "%'"
+	sql := fmt.Sprintf("select kode,nama from reseller r where r.kode like %s%s%s or r.nama like %s%s%s ;", likeStart, arg, likeEnd, likeStart, arg, likeEnd)
+	conn := utils.SelectConn(path, c.db)
+	if err := conn.Raw(sql).Debug().Scan(&list).Error; err != nil {
+		return nil, err
+	}
+	return list, nil
+}
