@@ -111,4 +111,5 @@ type CekLabaHourly struct {
 
 type ResponseLabaPerJam struct {
 	Aggregate map[int][]CekLabaHourly `json:"aggregate"`
+	Data      [][]CekLabaHourly       `json:"data"`
 }
