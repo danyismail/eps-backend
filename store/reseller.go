@@ -76,7 +76,7 @@ func (c *ResellerConstruct) GetList(path, arg string) ([]model.Reseller, error) 
 	return list, nil
 }
 
-func (c *ResellerConstruct) GetLabaHourly(path string) (*model.ResponseLabaPerJam, error) {
+func (c *ResellerConstruct) GetLabaHourly(path string) ([][]model.CekLabaHourly, error) {
 	sql := `
 	SELECT 
 		CAST(tgl_entri AS DATE) as tanggal,
@@ -105,39 +105,30 @@ func (c *ResellerConstruct) GetLabaHourly(path string) (*model.ResponseLabaPerJa
 		return nil, err
 	}
 
-	// Map to store aggregated totals
-	aggregatedData := make(map[int][]model.CekLabaHourly)
-	// Aggregate data based on "tgl" key
-	result := []model.CekLabaHourly{}
-	var sumTrx, sumLaba int
-
+	aggregatedData := make(map[int]int)
 	for _, item := range data {
-		aggregatedData[item.Tgl] = nil
+		aggregatedData[item.Tgl] += item.Laba
+	}
+	var arr []int //array list of date
+	for key := range aggregatedData {
+		arr = append(arr, key)
 	}
 
-	var lastKey int
-	for key := range aggregatedData {
-		//reset sum for each tanggal
-		if key != lastKey {
-			sumLaba, sumTrx = 0, 0
-			result = nil
-		}
-		for _, v := range data {
-			//populate per tanggal
-			if key == v.Tgl {
-				sumTrx += v.Trx
-				sumLaba += v.Laba
-				v.Trx = sumTrx
-				v.Laba = sumLaba
-				result = append(result, v)
-				aggregatedData[key] = result
+	var result [][]model.CekLabaHourly
+	var sumTrx, sumLaba int
+	for i := 0; i < len(arr); i++ {
+		sumTrx, sumLaba = 0, 0
+		innerArr := []model.CekLabaHourly{}
+		for j := 0; j < len(data); j++ {
+			if data[j].Tgl == arr[i] {
+				sumTrx += data[j].Trx
+				sumLaba += data[j].Laba
+				data[j].Trx = sumTrx
+				data[j].Laba = sumLaba
+				innerArr = append(innerArr, data[j])
 			}
 		}
-		lastKey = key //flag to identify if tanggal is changed
+		result = append(result, innerArr)
 	}
-
-	response := model.ResponseLabaPerJam{
-		Aggregate: aggregatedData,
-	}
-	return &response, nil
+	return result, nil
 }
