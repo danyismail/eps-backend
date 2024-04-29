@@ -77,10 +77,10 @@ func (c *ResellerConstruct) GetList(path, arg string) ([]model.Reseller, error) 
 }
 
 func (c *ResellerConstruct) GetLabaHourly(path string) (*model.ResponseLabaPerJam, error) {
-	cl := []model.CekLabaHourly{}
 	sql := `
 	SELECT 
 		CAST(tgl_entri AS DATE) as tanggal,
+		DATEPART(DAY, tgl_entri) as tgl,
 		CASE 
 			WHEN DATEPART(HOUR, tgl_entri) + 1 = 24 THEN 0
 			ELSE DATEPART(HOUR, tgl_entri) + 1
@@ -93,38 +93,51 @@ func (c *ResellerConstruct) GetLabaHourly(path string) (*model.ResponseLabaPerJa
 		tgl_entri >= CONVERT(datetime, CONVERT(date, DATEADD(day, -2, GETDATE()))) AND status = 20
 	GROUP BY 
 		CAST(tgl_entri AS DATE),
+		DATEPART(DAY, tgl_entri),
 		DATEPART(HOUR, tgl_entri)
 	ORDER BY 
-		CAST(tgl_entri AS DATE),
+		DATEPART(DAY, tgl_entri),
 		DATEPART(HOUR, tgl_entri);
 	`
+	data := []model.CekLabaHourly{}
 	conn := utils.SelectConn(path, c.db)
-	if err := conn.Raw(sql).Debug().Scan(&cl).Error; err != nil {
+	if err := conn.Raw(sql).Debug().Scan(&data).Error; err != nil {
 		return nil, err
 	}
 
 	// Map to store aggregated totals
-	aggregatedData := make(map[string]int)
-	// // Aggregate data based on "day" key
-	mapData := []model.CekLabaHourly{}
+	aggregatedData := make(map[int][]model.CekLabaHourly)
+	// Aggregate data based on "tgl" key
+	result := []model.CekLabaHourly{}
 	var sumTrx, sumLaba int
-	for _, item := range cl {
-		aggregatedData[item.Tanggal.Local().UTC().Format(utils.DateOnly)] += item.Trx
-		sumTrx += item.Trx
-		sumLaba += item.Laba
-		item.Trx = sumTrx
-		item.Laba = sumLaba
-		mapData = append(mapData, item)
+
+	for _, item := range data {
+		aggregatedData[item.Tgl] = nil
 	}
-	result := model.ResponseLabaPerJam{
-		HourlyData: mapData,
-		Aggregate:  aggregatedData,
+
+	var lastKey int
+	for key := range aggregatedData {
+		//reset sum for each tanggal
+		if key != lastKey {
+			sumLaba, sumTrx = 0, 0
+			result = nil
+		}
+		for _, v := range data {
+			//populate per tanggal
+			if key == v.Tgl {
+				sumTrx += v.Trx
+				sumLaba += v.Laba
+				v.Trx = sumTrx
+				v.Laba = sumLaba
+				result = append(result, v)
+				aggregatedData[key] = result
+			}
+		}
+		lastKey = key //flag to identify if tanggal is changed
 	}
-	// Convert aggregated data to slice of DayTotal structs
-	// var result []model.CekLabaHourly
-	// for tanggal, total := range aggregatedData {
-	// 	result = append(result, model.CekLabaHourly{Tanggal: tanggal, Trx: total})
-	// }
-	// return result, nil
-	return &result, nil
+
+	response := model.ResponseLabaPerJam{
+		Aggregate: aggregatedData,
+	}
+	return &response, nil
 }
