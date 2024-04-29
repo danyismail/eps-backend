@@ -75,3 +75,56 @@ func (c *ResellerConstruct) GetList(path, arg string) ([]model.Reseller, error) 
 	}
 	return list, nil
 }
+
+func (c *ResellerConstruct) GetLabaHourly(path string) (*model.ResponseLabaPerJam, error) {
+	cl := []model.CekLabaHourly{}
+	sql := `
+	SELECT 
+		CAST(tgl_entri AS DATE) as tanggal,
+		CASE 
+			WHEN DATEPART(HOUR, tgl_entri) + 1 = 24 THEN 0
+			ELSE DATEPART(HOUR, tgl_entri) + 1
+		END AS jam,
+		COUNT(1)  AS trx,
+		CAST(SUM(harga - harga_beli) AS INT)  AS laba
+	FROM 
+		transaksi t
+	WHERE 
+		tgl_entri >= CONVERT(datetime, CONVERT(date, DATEADD(day, -2, GETDATE()))) AND status = 20
+	GROUP BY 
+		CAST(tgl_entri AS DATE),
+		DATEPART(HOUR, tgl_entri)
+	ORDER BY 
+		CAST(tgl_entri AS DATE),
+		DATEPART(HOUR, tgl_entri);
+	`
+	conn := utils.SelectConn(path, c.db)
+	if err := conn.Raw(sql).Debug().Scan(&cl).Error; err != nil {
+		return nil, err
+	}
+
+	// Map to store aggregated totals
+	aggregatedData := make(map[string]int)
+	// // Aggregate data based on "day" key
+	mapData := []model.CekLabaHourly{}
+	var sumTrx, sumLaba int
+	for _, item := range cl {
+		aggregatedData[item.Tanggal.Local().UTC().Format(utils.DateOnly)] += item.Trx
+		sumTrx += item.Trx
+		sumLaba += item.Laba
+		item.Trx = sumTrx
+		item.Laba = sumLaba
+		mapData = append(mapData, item)
+	}
+	result := model.ResponseLabaPerJam{
+		HourlyData: mapData,
+		Aggregate:  aggregatedData,
+	}
+	// Convert aggregated data to slice of DayTotal structs
+	// var result []model.CekLabaHourly
+	// for tanggal, total := range aggregatedData {
+	// 	result = append(result, model.CekLabaHourly{Tanggal: tanggal, Trx: total})
+	// }
+	// return result, nil
+	return &result, nil
+}

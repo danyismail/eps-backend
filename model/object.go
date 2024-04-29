@@ -100,3 +100,15 @@ type SumLabaReseller struct {
 	Trx  int     `json:"trx"`
 	Laba float64 `json:"laba"`
 }
+
+type CekLabaHourly struct {
+	Tanggal time.Time `json:"tanggal"`
+	Jam     int       `json:"jam"`
+	Trx     int       `json:"trx"`
+	Laba    int       `json:"laba"`
+}
+
+type ResponseLabaPerJam struct {
+	Aggregate  map[string]int  `json:"aggregate"`
+	HourlyData []CekLabaHourly `json:"hourly_data"`
+}
