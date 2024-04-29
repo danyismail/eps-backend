@@ -102,11 +102,11 @@ type SumLabaReseller struct {
 }
 
 type CekLabaHourly struct {
-	Tanggal time.Time `json:"tanggal"`
-	Tgl     int       `json:"tgl"`
-	Jam     int       `json:"jam"`
-	Trx     int       `json:"trx"`
-	Laba    int       `json:"laba"`
+	Tanggal string `json:"tanggal"`
+	Tgl     int    `json:"tgl"`
+	Jam     int    `json:"jam"`
+	Trx     int    `json:"trx"`
+	Laba    int    `json:"laba"`
 }
 
 type ResponseLabaPerJam struct {

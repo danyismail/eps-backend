@@ -79,7 +79,7 @@ func (c *ResellerConstruct) GetList(path, arg string) ([]model.Reseller, error) 
 func (c *ResellerConstruct) GetLabaHourly(path string) ([][]model.CekLabaHourly, error) {
 	sql := `
 	SELECT 
-		CAST(tgl_entri AS DATE) as tanggal,
+		FORMAT(tgl_entri , 'yyyy-MM-dd') as tanggal,
 		DATEPART(DAY, tgl_entri) as tgl,
 		CASE 
 			WHEN DATEPART(HOUR, tgl_entri) + 1 = 24 THEN 0
@@ -92,7 +92,7 @@ func (c *ResellerConstruct) GetLabaHourly(path string) ([][]model.CekLabaHourly,
 	WHERE 
 		tgl_entri >= CONVERT(datetime, CONVERT(date, DATEADD(day, -2, GETDATE()))) AND status = 20
 	GROUP BY 
-		CAST(tgl_entri AS DATE),
+		FORMAT(tgl_entri , 'yyyy-MM-dd'),
 		DATEPART(DAY, tgl_entri),
 		DATEPART(HOUR, tgl_entri)
 	ORDER BY 
