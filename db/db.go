@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -48,7 +49,7 @@ func New() (DBConnection, error) {
 		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USER_EPS_REPLICA + ";password=" + PASSWORD_EPS_REPLICA + ";encrypt=disable;database=" + DATABASE_EPS_REPLICA,
 	}
 
-	// fmt.Println(listConnDB)
+	fmt.Println(listConnDB)
 
 	instanceDB := DBConnection{}
 	for i, v := range listConnDB {
