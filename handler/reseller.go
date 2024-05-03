@@ -104,3 +104,25 @@ func (h *Handler) GetLabaHourly(c echo.Context) error {
 	})
 
 }
+
+func (h *Handler) GetLabaRugi(c echo.Context) error {
+	h.e.Logger.Info("::GetLabaRugi Started::")
+	from := c.QueryParam("startDt")
+	to := c.QueryParam("endDt")
+	result, err := h.resellerStore.GetLabaRugi(c.Param("e"), from, to)
+	if err != nil {
+		h.e.Logger.Error(err)
+		h.errorBot.SendMessage(err)
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       result,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+
+}

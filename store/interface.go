@@ -48,4 +48,5 @@ type ResellerStore interface {
 	GetSum(path, startDt, endDt, id string) (*model.SumLabaReseller, error)
 	GetList(path, arg string) ([]model.Reseller, error)
 	GetLabaHourly(path string) ([][]model.CekLabaHourly, error)
+	GetLabaRugi(path, from, to string) ([]model.CekLabaRugi, error)
 }
