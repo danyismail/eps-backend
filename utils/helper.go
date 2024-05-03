@@ -30,3 +30,7 @@ func SelectConn(path string, conn db.DBConnection) *gorm.DB {
 		return conn.DigiAmazone
 	}
 }
+
+func EmptyString(s string) bool {
+	return s == ""
+}

@@ -113,3 +113,10 @@ type ResponseLabaPerJam struct {
 	Aggregate map[int][]CekLabaHourly `json:"aggregate"`
 	Data      [][]CekLabaHourly       `json:"data"`
 }
+
+type CekLabaRugi struct {
+	Nama string  `json:"nama"`
+	Trx  float64 `json:"trx"`
+	Laba float64 `json:"laba"`
+	Rugi float64 `json:"rugi"`
+}

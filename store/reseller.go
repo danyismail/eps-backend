@@ -5,6 +5,7 @@ import (
 	"eps-backend/model"
 	"eps-backend/utils"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -131,4 +132,27 @@ func (c *ResellerConstruct) GetLabaHourly(path string) ([][]model.CekLabaHourly,
 		result = append(result, innerArr)
 	}
 	return result, nil
+}
+
+func (c *ResellerConstruct) GetLabaRugi(path, from, to string) ([]model.CekLabaRugi, error) {
+	if utils.EmptyString(from) && utils.EmptyString(to) {
+		from = time.Now().Format(utils.DateOnly)
+		to = time.Now().Format(utils.DateOnly)
+	}
+	b := strings.Builder{}
+	b.WriteString("SELECT join_table.nama, join_table.trx, pivot_table.laba, COALESCE(pivot_table.rugi, 0) rugi ")
+	b.WriteString("FROM (SELECT r.nama, harga - harga_beli selisih, CASE WHEN harga < harga_beli THEN 'rugi' ELSE 'laba' END keterangan ")
+	b.WriteString("FROM transaksi t JOIN reseller r ON t.kode_reseller = r.kode ")
+	b.WriteString(fmt.Sprintf("WHERE cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s' and t.status = 20) source_table ", from, to))
+	b.WriteString("PIVOT (SUM(selisih) FOR keterangan IN ([laba], [rugi])) pivot_table ")
+	b.WriteString("JOIN (SELECT r.nama, count(1) trx FROM transaksi t JOIN reseller r ON t.kode_reseller = r.kode ")
+	b.WriteString(fmt.Sprintf("WHERE cast(t.tgl_entri as date) BETWEEN '%s' AND '%s' and t.status = 20 GROUP BY r.nama) join_table ", from, to))
+	b.WriteString("ON pivot_table.nama = join_table.nama ORDER BY laba DESC")
+
+	data := []model.CekLabaRugi{}
+	conn := utils.SelectConn(path, c.db)
+	if err := conn.Raw(b.String()).Debug().Scan(&data).Error; err != nil {
+		return nil, err
+	}
+	return data, nil
 }

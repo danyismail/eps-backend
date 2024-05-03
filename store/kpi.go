@@ -86,7 +86,7 @@ func (c *KpiConstruct) GetAll(path string, startDt string, endDt string, pageNum
 	}
 
 	conn := utils.SelectConn(path, c.db)
-	if err := conn.Raw(sql).Scan(&kpis).Error; err != nil {
+	if err := conn.Raw(sql).Debug().Scan(&kpis).Error; err != nil {
 		return nil, attr, err
 	}
 
