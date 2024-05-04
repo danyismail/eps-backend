@@ -30,8 +30,23 @@ jobs:
           script: |
             pid=$(lsof -ti :1523)
             kill -9 $pid && cd go/src/eps-backend
-            rm -rf deployment_pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
+            rm -rf pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
-            sleep 5
-            echo "Process completed, finishing workflow."
-            exit
+            echo $! > pid.txt
+      
+      - name: Wait for process to complete
+      id: wait
+      run: |
+        while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
+          sleep 5
+        done
+
+      - name: Display nohup output
+      if: always()
+      run: |
+        cat nohup.out
+
+      - name: Process completed, workflow finished
+      if: always()
+      run: |
+        echo "Process completed, finishing workflow."
