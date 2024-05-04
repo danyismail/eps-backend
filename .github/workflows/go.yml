@@ -33,15 +33,15 @@ jobs:
             rm -rf deployment_pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             echo $! > deployment_pid.txt
-        
+
       - name:
         id: wait
-        run: | 
-        while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
-          sleep 5
-        done 
+        run: |
+          while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
+            sleep 5
+          done
 
       - name: Process completed, workflow finished
         if: always()
         run: |
-        echo "Process completed, finishing workflow."
+          echo "Process completed, finishing workflow."
