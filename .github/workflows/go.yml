@@ -33,7 +33,7 @@ jobs:
             rm -rf deployment_pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             sleep 5
-            echo $! > deployment_pid.txt
+          #  echo $! > deployment_pid.txt
             echo "Process completed, finishing workflow."
             exit
 
