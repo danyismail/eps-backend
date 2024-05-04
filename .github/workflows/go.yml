@@ -30,12 +30,12 @@ jobs:
           script: |
             pid=$(lsof -ti :1523)
             kill -9 $pid && cd go/src/eps-backend
-            rm -rf eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
+            rm -rf deployment_pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             echo $! > deployment_pid.txt
             deployment_pid=$(cat deployment_pid.txt)
             while ps -p $deployment_pid > /dev/null; do
               sleep 10
             done
-
             echo "Deployment finished."
+            exit 0
