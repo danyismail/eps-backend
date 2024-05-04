@@ -23,9 +23,9 @@ jobs:
       - name: Deploy 36
         uses: appleboy/ssh-action@master
         with:
-          host: 36.92.58.82
-          username: eps
-          password: dhani2001
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
             pid=$(lsof -ti :1523)
@@ -33,9 +33,15 @@ jobs:
             rm -rf deployment_pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             echo $! > deployment_pid.txt
-            deployment_pid=$(cat deployment_pid.txt)
-            while ps -p $deployment_pid > /dev/null; do
-              sleep 10
-            done
-            echo "Deployment finished."
-            exit 0
+        
+      - name:
+        id: wait
+        run: | 
+        while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
+          sleep 5
+        done 
+
+      - name: Process completed, workflow finished
+        if: always()
+        run: |
+        echo "Process completed, finishing workflow."
