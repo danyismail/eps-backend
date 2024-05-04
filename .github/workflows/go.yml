@@ -28,5 +28,6 @@ jobs:
           password: dhani2001
           port: 22
           script: |
+            cd go/src/eps-backend
             rm -rf eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
-            go mod tidy && go build -o eps-api &&  nohup ./eps-api &
+            go mod tidy && go build -o eps-api && nohup ./eps-api &
