@@ -7,18 +7,8 @@ on:
   push:
     branches: ["development"]
 jobs:
-  build:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: "1.18"
   deployment:
     runs-on: ubuntu-22.04
-    needs: build
     steps:
       - name: Deploy 36
         uses: appleboy/ssh-action@master
@@ -32,6 +22,12 @@ jobs:
             kill -9 $pid && cd go/src/eps-backend
             rm -rf pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api > /dev/null 2>&1 & echo $! > pid.txt
-            sleep 10   
-            echo "Deployment completed successfully"
+            pid=$(cat pid.txt)
+            if ps -p $pid > /dev/null; then
+              echo "Nohup process with PID $pid is running."
+            else
+              echo "Nohup process with PID $pid is not running."
+            exit 1  # Exit with an error code if the process is not running
+            fi
+              echo "Deployment completed successfully"
             exit 0
