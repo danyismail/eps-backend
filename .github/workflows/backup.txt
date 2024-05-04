@@ -32,6 +32,14 @@ jobs:
             kill -9 $pid && cd go/src/eps-backend
             rm -rf pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api > /dev/null 2>&1 & echo $! > pid.txt
-            sleep 10   
-            echo "Deployment completed successfully"
-            exit 0
+
+      - name: Wait for nohup process to start
+        id: wait_for_nohup
+        run: |
+          while ! ps -p $(cat pid.txt) > /dev/null; do sleep 1; done
+
+      - name: Finish deployment
+        if: steps.wait_for_nohup.outcome == 'success'
+        run: |
+          echo "Deployment completed successfully"
+          exit 0
