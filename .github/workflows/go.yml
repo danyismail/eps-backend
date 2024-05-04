@@ -33,20 +33,38 @@ jobs:
             rm -rf pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             echo $! > pid.txt
-      
+
       - name: Wait for process to complete
-      id: wait
-      run: |
-        while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
-          sleep 5
-        done
+        uses: appleboy/ssh-action@master
+        with:
+          host: 36.92.58.82
+          username: eps
+          password: dhani2001
+          port: 22
+          id: wait
+          script: |
+            while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
+              sleep 5
+            done
 
       - name: Display nohup output
-      if: always()
-      run: |
-        cat nohup.out
+        uses: appleboy/ssh-action@master
+        with:
+          host: 36.92.58.82
+          username: eps
+          password: dhani2001
+          port: 22
+        if: always()
+        script: |
+          cat nohup.out
 
       - name: Process completed, workflow finished
-      if: always()
-      run: |
-        echo "Process completed, finishing workflow."
+        uses: appleboy/ssh-action@master
+        with:
+          host: 36.92.58.82
+          username: eps
+          password: dhani2001
+          port: 22
+        if: always()
+        script: |
+          echo "Process completed, finishing workflow."
