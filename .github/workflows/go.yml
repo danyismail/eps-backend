@@ -13,13 +13,13 @@ jobs:
 
   build:
     runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v4
+    # steps:
+    # - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.18'
+    # - name: Set up Go
+    #   uses: actions/setup-go@v4
+    #   with:
+    #     go-version: '1.18'
     - name: Check Service
       run: pid=$(lsof -ti :1523)
 
@@ -30,4 +30,4 @@ jobs:
       run: rm -rf eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
 
     - name: Run in backgroung
-      run: go mod tidy && go build -o eps-api &&  nohup ./eps-api &
+      run: go mod tidy && go build -o eps-api && nohup ./eps-api &
