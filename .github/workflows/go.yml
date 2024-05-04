@@ -30,7 +30,6 @@ jobs:
           script: |
             pid=$(lsof -ti :1523)
             kill -9 $pid && cd go/src/eps-backend
-            cd go/src/eps-backend
             rm -rf eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             exit 0
