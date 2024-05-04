@@ -34,37 +34,13 @@ jobs:
             go mod tidy && go build -o eps-api && nohup ./eps-api &
             echo $! > pid.txt
 
-      - name: Wait for process to complete
-        uses: appleboy/ssh-action@master
-        with:
-          host: 36.92.58.82
-          username: eps
-          password: dhani2001
-          port: 22
-          id: wait
-          script: |
-            while kill -0 $(cat pid.txt) >/dev/null 2>&1; do
-              sleep 5
-            done
+      - name: Wait for nohup process to start
+        id: wait_for_nohup
+        run: |
+          while ! ps -p $(cat pid.txt) > /dev/null; do sleep 1; done
 
-      - name: Display nohup output
-        uses: appleboy/ssh-action@master
-        with:
-          host: 36.92.58.82
-          username: eps
-          password: dhani2001
-          port: 22
-          if: always()
-          script: |
-            cat nohup.out
-
-      - name: Process completed, workflow finished
-        uses: appleboy/ssh-action@master
-        with:
-          host: 36.92.58.82
-          username: eps
-          password: dhani2001
-          port: 22
-          if: always()
-          script: |
-            echo "Process completed, finishing workflow."
+      - name: Finish deployment
+        if: steps.wait_for_nohup.outcome == 'success'
+        run: |
+          echo "Deployment completed successfully"
+          exit 0
