@@ -21,12 +21,13 @@ jobs:
     steps:
       - name: Deploy 36
         uses: appleboy/ssh-action@master
-        host: 36.92.58.82
-        username: eps
-        password: dhani2001
-        port: 22
-        script: |
-          pid=$(lsof -ti :1523)
-          kill -9 $pid && cd go/src/eps-backend
-          rm -rf eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
-          go mod tidy && go build -o eps-api &&  nohup ./eps-api &
+        with:
+          host: 36.92.58.82
+          username: eps
+          password: dhani2001
+          port: 22
+          script: |
+            pid=$(lsof -ti :1523)
+            kill -9 $pid && cd go/src/eps-backend
+            rm -rf eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
+            go mod tidy && go build -o eps-api &&  nohup ./eps-api &
