@@ -8,13 +8,13 @@ WORKDIR /app
 COPY . .
 
 # Download dependencies
-RUN go mod init && go mod tidy
+RUN go mod init eps-backend && go mod tidy
 
 # Build the Go application
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o myapp
 
-# Expose port 1525 to the outside world :)
-EXPOSE 1525
+# Expose port 1523 to the outside world :)
+EXPOSE 1523
 
 # Command to run the executable
 CMD ["./myapp"]
