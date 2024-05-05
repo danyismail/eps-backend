@@ -2,7 +2,6 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
 name: Go
-
 on:
   push:
     branches: ["development"]
@@ -10,7 +9,10 @@ jobs:
   deployment:
     runs-on: ubuntu-22.04
     steps:
-      - name: Deploy 36
+      - name: action-with-emoji
+        uses: MizukiSonoko/gh-action-with-emoji@v0.3
+
+      - name: deploy production 💃😘
         uses: appleboy/ssh-action@master
         with:
           host: 36.92.58.82
@@ -18,16 +20,16 @@ jobs:
           password: dhani2001
           port: 22
           script: |
-            pid=$(lsof -ti :1523)
-            kill -9 $pid && cd go/src/eps-backend
-            rm -rf pid.txt eps-api nohup.out go.mod go.sum && git pull origin development && go mod init
-            go mod tidy && go build -o eps-api && nohup ./eps-api > /dev/null 2>&1 & echo $! > pid.txt
-            pid=$(cat pid.txt)
-            if ps -p $pid > /dev/null; then
-              echo "Nohup process with PID $pid is running."
+            container_id=$(docker ps --filter "expose=1523" -q)
+            if [ ! -z "$container_id" ]; then
+                echo "container found, stop container.."
+                docker stop $container_id
+                echo "container has been stoped."
             else
-              echo "Nohup process with PID $pid is not running."
-            exit 1  # Exit with an error code if the process is not running
+                echo "container not found"
             fi
-              echo "Deployment completed successfully"
-            exit 0
+                echo "remove , pull , build and run"
+                cd ~/go/src/eps-backend
+                rm -rf go.mod go.sum && sudo git pull origin development
+                docker build -t eps-backend-prod:latest .
+                docker run -v /home/eps/go/src/eps-backend/uploads:/app/uploads -v /home/eps/backend-logs/app.log:/app/app.log  -p 1523:1523 -d eps-backend-prod
