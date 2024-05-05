@@ -9,7 +9,10 @@ jobs:
   deployment:
     runs-on: ubuntu-22.04
     steps:
-      - name: Deploy 36
+      - name: action-with-emoji
+      uses: MizukiSonoko/gh-action-with-emoji@v0.3
+            
+      - name: deploy assembly 💃😘
         uses: appleboy/ssh-action@master
         with:
           host: 36.92.58.82
@@ -27,6 +30,6 @@ jobs:
             fi
                 echo "remove , pull , build and run"
                 cd ~/go/src/assembly/eps-backend
-                sudo rm -rf go.mod go.sum && sudo git pull origin testing
+                rm -rf go.mod go.sum && git pull origin testing
                 docker build -t eps-backend-api:latest .
-                sudo docker run -v /home/eps/go/src/assembly/eps-backend/uploads:/app/uploads -v /home/eps/backend-testing-logs/app.log:/app/app.log  -p 1525:1525 -d eps-backend-api
+                docker run -v /home/eps/go/src/assembly/eps-backend/uploads:/app/uploads -v /home/eps/backend-testing-logs/app.log:/app/app.log  -p 1525:1525 -d eps-backend-api
