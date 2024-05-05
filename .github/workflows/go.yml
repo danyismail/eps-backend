@@ -14,15 +14,15 @@ jobs:
 
       - name: Print Secrets
         run: |
-          echo "SSH_HOST: ${{ secrets.HOST }}"
-          echo "SSH_USERNAME: ${{ secrets.USERNAME }}"
+          echo "SSH_HOST: ${{ secrets.SECRET_HOST }}"
+          echo "SSH_USERNAME: ${{ secrets.SECRET_USERNAME}}"
 
       - name: deploy production 💃😘
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          username: ${{ secrets.SECRET_USERNAME }}
+          password: ${{ secrets.SECRET_PASSWORD }}
           port: 22
           script: |
             container_id=$(docker ps --filter "expose=1523" -q)
