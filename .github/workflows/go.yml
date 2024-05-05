@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: action-with-emoji
-      uses: MizukiSonoko/gh-action-with-emoji@v0.3
-            
+        uses: MizukiSonoko/gh-action-with-emoji@v0.3
+
       - name: deploy assembly 💃😘
         uses: appleboy/ssh-action@master
         with:
