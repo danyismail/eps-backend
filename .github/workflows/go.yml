@@ -15,9 +15,9 @@ jobs:
       - name: deploy production 💃😘
         uses: appleboy/ssh-action@master
         with:
-          host: 36.92.58.82
-          username: eps
-          password: dhani2001
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
             container_id=$(docker ps --filter "expose=1523" -q)
