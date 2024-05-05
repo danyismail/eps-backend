@@ -9,7 +9,7 @@ COPY go.mod .
 COPY go.sum .
 
 # Download dependencies
-RUN go mod download
+RUN go mod tidy
 
 # Copy the rest of the application code
 COPY . .
@@ -23,4 +23,4 @@ EXPOSE 1717
 # Command to run the executable
 CMD ["./myapp"]
 
-#docker run -v /Users/daniismail/Documents/uploads:/app/uploads -v /Users/daniismail/Documents/backend-logs:/app/app.log  -p 1717:1525 -d eps-backend-api
+#docker run -v /home/eps/go/src/assembly/eps-backend/uploads:/app/uploads -v /Users/daniismail/Documents/backend-logs:/app/app.log  -p 1525:1525 -d eps-backend-api

@@ -1,0 +1,32 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+on:
+  push:
+    branches: ["testing"]
+jobs:
+  deployment:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Deploy 36
+        uses: appleboy/ssh-action@master
+        with:
+          host: 36.92.58.82
+          username: eps
+          password: dhani2001
+          port: 22
+          script: |
+            container_id=$(docker ps --filter "expose=1525" -q)
+            if [ ! -z "$container_id" ]; then
+                echo "container found, stop container..."
+                docker stop $container_id
+                echo "container has been stoped."
+            else
+                echo "container not found"
+            fi
+                echo "remove , pull , build and run"
+                cd ~/go/src/assembly/eps-backend
+                sudo rm -rf go.mod go.sum && sudo git pull origin testing
+                docker build -t eps-backend-api:latest .
+                sudo docker run -v /home/eps/go/src/assembly/eps-backend/uploads:/app/uploads -v /home/eps/backend-testing-logs/app.log:/app/app.log  -p 1525:1525 -d eps-backend-api
