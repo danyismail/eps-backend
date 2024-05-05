@@ -7,6 +7,7 @@ on:
     branches: ["development"]
 jobs:
   deployment:
+    environment: SECRET_HOST
     runs-on: ubuntu-22.04
     steps:
       - name: action-with-emoji
