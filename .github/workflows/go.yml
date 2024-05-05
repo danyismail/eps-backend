@@ -12,6 +12,11 @@ jobs:
       - name: action-with-emoji
         uses: MizukiSonoko/gh-action-with-emoji@v0.3
 
+      - name: Print Secrets
+        run: |
+          echo "SSH_HOST: ${{ secrets.HOST }}"
+          echo "SSH_USERNAME: ${{ secrets.USERNAME }}"
+
       - name: deploy production 💃😘
         uses: appleboy/ssh-action@master
         with:
