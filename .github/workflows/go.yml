@@ -30,6 +30,6 @@ jobs:
             fi
                 echo "remove , pull , build and run"
                 cd ~/go/src/assembly/eps-backend
-                rm -rf go.mod go.sum && git pull origin testing
+                rm -rf go.mod go.sum && sudo git pull origin testing
                 docker build -t eps-backend-api:latest .
                 docker run -v /home/eps/go/src/assembly/eps-backend/uploads:/app/uploads -v /home/eps/backend-testing-logs/app.log:/app/app.log  -p 1525:1525 -d eps-backend-api
