@@ -22,7 +22,7 @@ jobs:
           script: |
             container_id=$(docker ps --filter "expose=1525" -q)
             if [ ! -z "$container_id" ]; then
-                echo "container found, stop container..."
+                echo "container found, stop container.."
                 docker stop $container_id
                 echo "container has been stoped."
             else
