@@ -52,7 +52,7 @@ func (c *ResellerConstruct) GetSum(path, startDt, endDt, id string) (*model.SumL
 		endDt = time.Now().Format("2006-01-02")
 	}
 
-	sql := "SELECT r.nama,COUNT(1) trx,CONVERT(INT, sum(harga - harga_beli)) laba"
+	sql := "SELECT r.nama, COUNT(1) trx, CONVERT(INT, sum(harga)) jual, CONVERT(INT, sum(harga_beli)) beli, CONVERT(INT, sum(harga - harga_beli)) laba"
 	sql = fmt.Sprintf("%s FROM transaksi t JOIN reseller r ON t.kode_reseller = r.kode WHERE t.kode_reseller = '%s' AND CAST(tgl_entri AS DATE) BETWEEN '%s' AND '%s'", sql, id, startDt, endDt)
 	sql = fmt.Sprintf("%s AND status = %d", sql, 20)
 	sql = fmt.Sprintf("%s GROUP BY r.nama", sql)

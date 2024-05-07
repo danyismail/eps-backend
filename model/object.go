@@ -98,6 +98,8 @@ type ResellerParam struct {
 type SumLabaReseller struct {
 	Nama string  `json:"nama"`
 	Trx  int     `json:"trx"`
+	Jual int     `json:"jual"`
+	Beli int     `json:"beli"`
 	Laba float64 `json:"laba"`
 }
 
