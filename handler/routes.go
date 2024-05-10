@@ -26,6 +26,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	sales := v1.Group("/sales")
 	sales.GET("/:e", h.GetSales)
+	sales.GET("/:e/pph", h.GetPPH)
 	sales.GET("/:e/periode", h.GetSalesPeriode)
 
 	deposit := v1.Group("/deposit")
