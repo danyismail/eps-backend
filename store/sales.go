@@ -39,6 +39,42 @@ WHERE
 	return salesToday, nil
 }
 
+func (c *SalesConstruct) GetPPH(path string) ([]model.SalesReport, error) {
+	pphOfSalesToday := []model.SalesReport{}
+	sql := `
+		SELECT 
+			COUNT(1) AS trx,
+			SUM(harga_beli) AS pembelian,
+			SUM(harga) AS penjualan,
+			SUM(harga) - SUM(harga_beli) AS laba,
+			SUM(harga) * 0.005 AS pph
+		FROM
+			transaksi t
+		WHERE
+				status = 20
+			AND kode_reseller  in (
+			'EPS0634',
+			'EPS0695',
+			'EPS0840',
+			'EPS0921',
+			'EPS0712',
+			'EPS6890',
+			'EPS6973',
+			'EPS6957',
+			'EPS6995',
+			'EPS0935'
+		) AND t.tgl_entri BETWEEN (CONVERT(DATETIME,
+			CONVERT(DATE,
+			GETDATE()))) AND (
+			SELECT
+				CAST(GETDATE() AS DATETIME));
+	`
+	if err := utils.SelectConn(path, c.db).Debug().Raw(sql).Scan(&pphOfSalesToday).Error; err != nil {
+		return nil, err
+	}
+	return pphOfSalesToday, nil
+}
+
 func (c *SalesConstruct) GetSalesPeriode(path, from, to string) ([]model.SalesReport, error) {
 	salesToday := []model.SalesReport{}
 	sql := "SELECT COUNT(1) AS trx, SUM(t.harga_beli) AS pembelian, SUM(t.harga) AS penjualan ,SUM(t.harga) - SUM(t.harga_beli) AS laba"

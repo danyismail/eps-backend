@@ -15,6 +15,7 @@ type DepositStore interface {
 
 type SalesStore interface {
 	GetSales(path string) ([]model.SalesReport, error)
+	GetPPH(path string) ([]model.SalesReport, error)
 	GetSalesPeriode(path, from, to string) ([]model.SalesReport, error)
 }
 

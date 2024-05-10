@@ -27,6 +27,25 @@ func (h *Handler) GetSales(c echo.Context) error {
 	})
 }
 
+func (h *Handler) GetPPH(c echo.Context) error {
+	h.e.Logger.Info("::GetPPH Started::")
+	result, err := h.salesStore.GetPPH(c.Param("e"))
+	if err != nil {
+		h.e.Logger.Error(err)
+		h.errorBot.SendMessage(err)
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       result,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}
+
 func (h *Handler) GetSalesPeriode(c echo.Context) error {
 	h.e.Logger.Info("::GetSalesPeriode Started::")
 	startDate := c.QueryParam("startDate")
