@@ -39,6 +39,7 @@ type SalesReport struct {
 	Penjualan float64 `json:"penjualan"`
 	Laba      float64 `json:"laba"`
 	Pph       float64 `json:"pph"`
+	LabaNet   float64 `json:"laba_net"`
 }
 
 type Supplier struct {

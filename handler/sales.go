@@ -51,8 +51,8 @@ func (h *Handler) GetSalesPeriode(c echo.Context) error {
 	startDate := c.QueryParam("startDate")
 	endDate := c.QueryParam("endDate")
 	if startDate == "" || endDate == "" {
-		startDate = utils.StartDate
-		endDate = utils.EndDate
+		startDate = utils.StartOfDateTime
+		endDate = utils.CurrentDateTime
 	}
 	result, err := h.salesStore.GetSalesPeriode(c.Param("e"), startDate, endDate)
 	if err != nil {
