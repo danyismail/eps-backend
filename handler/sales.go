@@ -5,7 +5,7 @@ import (
 	"eps-backend/utils"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func (h *Handler) GetSales(c echo.Context) error {

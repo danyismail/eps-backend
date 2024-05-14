@@ -5,9 +5,19 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
+// Get All KPI godoc
+// @Summary List Data KPI
+// @Description Measure KPI of each transaction
+// @Tags KPI
+// @Accept json
+// @Produce json
+// @Param data body structs.PageView false "request body"
+// @Param database path string true "database path argument"
+// @Success 200 {object} structs.CommonResponse
+// @Router /api/kpi/{database}/list [post]
 func (h *Handler) GetAll(c echo.Context) error {
 	h.e.Logger.Info("::GetAll KPI Started::")
 	req := structs.PageView{}

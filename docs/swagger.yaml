@@ -1,0 +1,71 @@
+definitions:
+  structs.CommonResponse:
+    properties:
+      data: {}
+      failed:
+        type: integer
+      message:
+        type: string
+      resultCount:
+        type: integer
+      statusCode:
+        type: integer
+      success:
+        type: integer
+      total:
+        type: integer
+    type: object
+  structs.PageView:
+    properties:
+      endDt:
+        example: "2024-05-11"
+        type: string
+      mdn:
+        example: "081284088408"
+        type: string
+      page:
+        example: 1
+        type: integer
+      shift:
+        example: sore
+        type: string
+      startDt:
+        example: "2024-05-11"
+        type: string
+      status:
+        example: 20
+        type: integer
+      view:
+        example: 10
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/kpi/{database}/list:
+    post:
+      consumes:
+      - application/json
+      description: Measure KPI of each transaction
+      parameters:
+      - description: request body
+        in: body
+        name: data
+        schema:
+          $ref: '#/definitions/structs.PageView'
+      - description: database path argument
+        in: path
+        name: database
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      summary: List Data KPI
+      tags:
+      - KPI
+swagger: "2.0"

@@ -5,7 +5,7 @@ import (
 	"eps-backend/structs"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func (h *Handler) GetLabaReseller(c echo.Context) error {
