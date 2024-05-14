@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Download dependencies
+RUN rm -rf go.mod go.sum
 RUN go mod init eps-backend && go mod tidy
 
 # Build the Go application
