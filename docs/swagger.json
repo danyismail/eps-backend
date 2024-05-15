@@ -43,6 +43,50 @@
                     }
                 }
             }
+        },
+        "/api/sales/{database}/periode": {
+            "get": {
+                "description": "Get Sales, PPH22 and Sales Net",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Get Sales By Date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query param",
+                        "name": "startDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "query param",
+                        "name": "endDate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "database path argument",
+                        "name": "database",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.CommonResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

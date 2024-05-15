@@ -68,4 +68,33 @@ paths:
       summary: List Data KPI
       tags:
       - KPI
+  /api/sales/{database}/periode:
+    get:
+      consumes:
+      - application/json
+      description: Get Sales, PPH22 and Sales Net
+      parameters:
+      - description: query param
+        in: query
+        name: startDate
+        type: string
+      - description: query param
+        in: query
+        name: endDate
+        type: string
+      - description: database path argument
+        in: path
+        name: database
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      summary: Get Sales By Date
+      tags:
+      - Sales
 swagger: "2.0"

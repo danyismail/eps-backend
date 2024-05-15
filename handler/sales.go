@@ -46,6 +46,17 @@ func (h *Handler) GetPPH(c echo.Context) error {
 	})
 }
 
+// Get All Sales godoc
+// @Summary Get Sales By Date
+// @Description Get Sales, PPH22 and Sales Net
+// @Tags Sales
+// @Accept json
+// @Produce json
+// @Param startDate query string false "query param"
+// @Param endDate query string false "query param"
+// @Param database path string true "database path argument"
+// @Success 200 {object} structs.CommonResponse
+// @Router /api/sales/{database}/periode [get]
 func (h *Handler) GetSalesPeriode(c echo.Context) error {
 	h.e.Logger.Info("::GetSalesPeriode Started::")
 	startDate := c.QueryParam("startDate")
