@@ -124,8 +124,6 @@ func (c *SalesConstruct) GetSalesPeriode(path, from, to string) ([]model.SalesRe
 				(t.kode_produk NOT LIKE '%%NF%%' AND kode_reseller IN ('EPS0695', 'EPS0634', 'EPS0840', 'EPS0935'))
 				OR (t.kode_produk LIKE '%%FZNF%%' AND kode_reseller IN ('EPS6995', 'EPS6890', 'EPS6957', 'EPS6973', 'EPS0921'))
 				OR (t.kode_produk NOT LIKE '%%NF%%' AND kode_reseller IN ('EPS6995', 'EPS6890', 'EPS6957', 'EPS6973', 'EPS0921'))
-				OR (t.kode_produk LIKE '%%SBNONF%%' AND kode_reseller = 'EPS0712')
-				OR (t.kode_produk NOT LIKE '%%NF%%' AND kode_reseller = 'EPS0712')
 			)
 			AND p.kode_operator NOT IN ('PLN', 'PLN01', 'PLN02', 'ECOMM', 'GAMES')
 			AND CAST(tgl_entri AS DATE) BETWEEN '%s' AND '%s'
