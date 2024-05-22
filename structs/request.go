@@ -61,8 +61,8 @@ func (u *CreateUser) Binding(c echo.Context) error {
 }
 
 type Login struct {
-	Email    string `json:"email" example:"example@email.com"`
-	Password string `json:"password" example:"password123"`
+	Email    string `json:"email" example:"developer@mail.com"`
+	Password string `json:"password" example:"password"`
 }
 
 func (u *Login) Binding(c echo.Context) error {

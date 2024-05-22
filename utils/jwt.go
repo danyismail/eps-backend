@@ -77,7 +77,10 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 						return next(c)
 					}
 				}
-				return c.JSON(http.StatusUnauthorized, err.Error())
+				return c.JSON(http.StatusUnauthorized, structs.SimpleCommonResponse{
+					StatusCode: http.StatusUnauthorized,
+					Message:    err.Error(),
+				})
 			}
 
 			//parse JWT to object JWT Library

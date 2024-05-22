@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -55,23 +56,17 @@ func (h *Handler) CreateUser(c echo.Context) error {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param data body structs.RequestPaginate true "request body"
+// @Param page query string false "query param page"
+// @Param view query string false "query param view"
 // @Success 200 {object} structs.CommonResponse
 // @Router /api/user/list [get]
+// @Security BearerAuth
 func (h *Handler) GetAllPaginated(c echo.Context) error {
 	h.e.Logger.Info("::GetAllPaginated Started::")
-	req := structs.RequestPaginate{}
-	if err := req.Binding(c); err != nil {
-		h.e.Logger.Error(err)
-		h.errorBot.SendMessage(err)
-		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
-			Message:    err.Error(),
-			StatusCode: http.StatusBadRequest,
-			Data:       nil,
-		})
-	}
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	view, _ := strconv.Atoi(c.QueryParam("view"))
 	total := h.userStore.Count()
-	users, err := h.userStore.GetAll(req.Page, req.View)
+	users, err := h.userStore.GetAll(page, view)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
@@ -83,7 +78,7 @@ func (h *Handler) GetAllPaginated(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, structs.CommonResponse{
 		Total:       total,
-		ResultCount: int64(req.View),
+		ResultCount: int64(view),
 		Data:        utils.MappingUserResponse(users),
 		StatusCode:  http.StatusOK,
 		Message:     "success",
@@ -96,9 +91,9 @@ func (h *Handler) GetAllPaginated(c echo.Context) error {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param id param string true "query param"
+// @Param id query string true "query param"
 // @Success 200 {object} structs.CommonResponse
-// @Router /api/user/list [get]
+// @Router /api/user/search [get]
 func (h *Handler) GetByID(c echo.Context) error {
 	h.e.Logger.Info("::GetByID Started::")
 	id := c.QueryParam("id")
@@ -129,9 +124,9 @@ func (h *Handler) GetByID(c echo.Context) error {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param id param string true "query param"
+// @Param id query string true "query param"
 // @Success 200 {object} structs.CommonResponse
-// @Router /api/user/list [delete]
+// @Router /api/user/delete [delete]
 func (h *Handler) Delete(c echo.Context) error {
 	h.e.Logger.Info("::Delete Started::")
 	id := c.QueryParam("id")
@@ -152,12 +147,12 @@ func (h *Handler) Delete(c echo.Context) error {
 // Login User godoc
 // @Summary User Login
 // @Description User Login
-// @Tags User
+// @Tags Auth
 // @Accept json
 // @Produce json
-// @Param data body structs.LoginRequest true "request body"
+// @Param data body structs.Login true "request body"
 // @Success 200 {object} structs.CommonResponse
-// @Router /api/user/create [post]
+// @Router /api/auth/login [post]
 func (h *Handler) Login(c echo.Context) error {
 	h.e.Logger.Info("::Login Started::")
 	req := structs.Login{}
