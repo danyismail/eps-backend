@@ -4,6 +4,40 @@
         "contact": {}
     },
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "description": "User Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/structs.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.CommonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/kpi/{database}/list": {
             "post": {
                 "description": "Measure KPI of each transaction",
@@ -87,6 +121,146 @@
                     }
                 }
             }
+        },
+        "/api/user/create": {
+            "post": {
+                "description": "Create New User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create New User",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/structs.CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.CommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/delete": {
+            "delete": {
+                "description": "Delete User By ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete User By ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query param",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.CommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get All User With Pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get All User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query param page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "query param view",
+                        "name": "view",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.CommonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/search": {
+            "get": {
+                "description": "Get User By ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get User By ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query param",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/structs.CommonResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -111,6 +285,40 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "structs.CreateUser": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "example@email.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "password123"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "superadmin"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "John Doe"
+                }
+            }
+        },
+        "structs.Login": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "developer@mail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "password"
                 }
             }
         },

@@ -15,6 +15,30 @@ definitions:
       total:
         type: integer
     type: object
+  structs.CreateUser:
+    properties:
+      email:
+        example: example@email.com
+        type: string
+      password:
+        example: password123
+        type: string
+      role:
+        example: superadmin
+        type: string
+      username:
+        example: John Doe
+        type: string
+    type: object
+  structs.Login:
+    properties:
+      email:
+        example: developer@mail.com
+        type: string
+      password:
+        example: password
+        type: string
+    type: object
   structs.PageView:
     properties:
       endDt:
@@ -42,6 +66,28 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: User Login
+      parameters:
+      - description: request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/structs.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      summary: User Login
+      tags:
+      - Auth
   /api/kpi/{database}/list:
     post:
       consumes:
@@ -97,4 +143,94 @@ paths:
       summary: Get Sales By Date
       tags:
       - Sales
+  /api/user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create New User
+      parameters:
+      - description: request body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/structs.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      summary: Create New User
+      tags:
+      - User
+  /api/user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete User By ID
+      parameters:
+      - description: query param
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      summary: Delete User By ID
+      tags:
+      - User
+  /api/user/list:
+    get:
+      consumes:
+      - application/json
+      description: Get All User With Pagination
+      parameters:
+      - description: query param page
+        in: query
+        name: page
+        type: string
+      - description: query param view
+        in: query
+        name: view
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      security:
+      - BearerAuth: []
+      summary: Get All User
+      tags:
+      - User
+  /api/user/search:
+    get:
+      consumes:
+      - application/json
+      description: Get User By ID
+      parameters:
+      - description: query param
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/structs.CommonResponse'
+      summary: Get User By ID
+      tags:
+      - User
 swagger: "2.0"

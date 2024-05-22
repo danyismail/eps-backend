@@ -6,6 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	_ "eps-backend/docs"
+
 	"github.com/labstack/gommon/log"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
