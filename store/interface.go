@@ -2,10 +2,18 @@ package store
 
 import (
 	"eps-backend/model"
+	"eps-backend/structs"
 )
 
+type UserStore interface {
+	Create(userRequest structs.CreateUser) (user *model.User, err error)
+	GetAll(page, view int) (users []model.User, err error)
+	Count() int64
+	GetUser(param map[string]interface{}) (result *model.User, err error)
+	Delete(id string) error
+}
+
 type KpiStore interface {
-	//data, totalSelectedData, view per page, err
 	GetAll(path, startDt, endDt string, page int, view int, mdn string, status int, shift string) (data *[]model.VKpis, attribute model.AttributeKPI, err error)
 }
 

@@ -2,19 +2,9 @@ package utils
 
 import (
 	"eps-backend/db"
-	"fmt"
-	"strings"
 
 	"gorm.io/gorm"
 )
-
-func FindPath(path string) string {
-	// Split the string by "/"
-	parts := strings.Split(path, "/")
-	fmt.Println(parts)
-
-	return parts[2]
-}
 
 func SelectConn(path string, conn db.DBConnection) *gorm.DB {
 	switch path {
@@ -37,4 +27,8 @@ func SelectConn(path string, conn db.DBConnection) *gorm.DB {
 
 func EmptyString(s string) bool {
 	return s == ""
+}
+
+func StringPointer(s string) *string {
+	return &s
 }
