@@ -1,11 +1,38 @@
 package structs
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type CommonResponse struct {
 	Total       int64       `json:"total"`
 	ResultCount int64       `json:"resultCount"`
 	Success     int64       `json:"success"`
 	Failed      int64       `json:"failed"`
-	Data        interface{} `json:"data"`
 	StatusCode  int         `json:"statusCode"`
 	Message     string      `json:"message"`
+	Data        interface{} `json:"data"`
+}
+
+type SimpleCommonResponse struct {
+	StatusCode int         `json:"statusCode"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data,omitempty"`
+}
+
+type LoginResponse struct {
+	Username string `json:"username"`
+	Role     string `json:"role"`
+	Token    string `json:"token"`
+}
+
+type UserResponse struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Role      string    `json:"role"`
 }
