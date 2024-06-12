@@ -5,4 +5,5 @@ const (
 	DIGI_EPS        = "de"
 	REPLICA_AMAZONE = "ra"
 	REPLICA_EPS     = "re"
+	BACKUP_AMAZONE  = "ba"
 )
