@@ -124,3 +124,27 @@ type CekLabaRugi struct {
 	Laba float64 `json:"laba"`
 	Rugi float64 `json:"rugi"`
 }
+type MarginReseller struct {
+	KodeReseller string  `json:"kode_reseller"`
+	Nama         string  `json:"nama"`
+	TotalTrx     int     `json:"trx"`
+	Pembelian    float64 `json:"pembelian"`
+	Penjualan    float64 `json:"penjualan"`
+	Laba         float64 `json:"laba"`
+}
+
+type MarginSupplier struct {
+	Label     string  `json:"label"`
+	TotalTrx  int     `json:"trx"`
+	Pembelian float64 `json:"pembelian"`
+	Penjualan float64 `json:"penjualan"`
+	Laba      float64 `json:"laba"`
+}
+
+type MarginProvider struct {
+	Provider  string  `json:"provider"`
+	TotalTrx  int     `json:"trx"`
+	Pembelian float64 `json:"pembelian"`
+	Penjualan float64 `json:"penjualan"`
+	Laba      float64 `json:"laba"`
+}
