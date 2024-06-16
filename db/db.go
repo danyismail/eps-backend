@@ -100,7 +100,7 @@ func New() (DBConnection, error) {
 			instanceDB.Backup = db
 		}
 	}
-	log.Println("successfully create all conn")
+	log.Println("successfully create all conn..")
 	return instanceDB, nil
 }
 
