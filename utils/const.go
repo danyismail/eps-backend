@@ -6,4 +6,5 @@ const (
 	REPLICA_AMAZONE = "ra"
 	REPLICA_EPS     = "re"
 	BACKUP_AMAZONE  = "ba"
+	OTODEV          = "od"
 )

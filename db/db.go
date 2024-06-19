@@ -16,6 +16,7 @@ type DBConnection struct {
 	Amazone     *gorm.DB
 	Eps         *gorm.DB
 	Backup      *gorm.DB
+	Otodev      *gorm.DB
 }
 
 func New() (DBConnection, error) {
@@ -49,6 +50,12 @@ func New() (DBConnection, error) {
 	USERNAME_BACKUP := os.Getenv("USERNAME_BACKUP")
 	PASSWORD_BACKUP := os.Getenv("PASSWORD_BACKUP")
 
+	DB_HOST_OTODEV := os.Getenv("DB_HOST_OTODEV")
+	DB_PORT_OTODEV := os.Getenv("DB_PORT_OTODEV")
+	DB_OTODEV := os.Getenv("DB_OTODEV")
+	USERNAME_OTODEV := os.Getenv("USERNAME_OTODEV")
+	PASSWORD_OTODEV := os.Getenv("PASSWORD_OTODEV")
+
 	if DB_HOST_DIGI == "" || DB_HOST_REPLICA == "" || DB_HOST_BACKUP == "" {
 		log.Fatalln("database credentials not define.")
 	}
@@ -59,6 +66,7 @@ func New() (DBConnection, error) {
 		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USERNAME_REPLICA_AMAZONE + ";password=" + PASSWORD_REPLICA_AMAZONE + ";encrypt=disable;database=" + DB_REPLICA_AMAZONE,
 		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USERNAME_REPLICA_EPS + ";password=" + PASSWORD_REPLICA_EPS + ";encrypt=disable;database=" + DB_REPLICA_EPS,
 		"server=" + DB_HOST_BACKUP + "," + DB_PORT_BACKUP + ";user id=" + USERNAME_BACKUP + ";password=" + PASSWORD_BACKUP + ";encrypt=disable;database=" + DB_BACKUP,
+		"server=" + DB_HOST_OTODEV + "," + DB_PORT_OTODEV + ";user id=" + USERNAME_OTODEV + ";password=" + PASSWORD_OTODEV + ";encrypt=disable;database=" + DB_OTODEV,
 	}
 
 	for _, v := range listConnDB {
@@ -98,6 +106,12 @@ func New() (DBConnection, error) {
 				return instanceDB, err
 			}
 			instanceDB.Backup = db
+		case 5:
+			db, err := setConnectionDB("otodev", v)
+			if err != nil {
+				return instanceDB, err
+			}
+			instanceDB.Otodev = db
 		}
 	}
 	log.Println("successfully create all conn..")
