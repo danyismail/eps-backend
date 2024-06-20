@@ -1,14 +1,66 @@
 package model
 
 import (
+	"database/sql/driver"
+	"encoding/hex"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
+type CustomUUID uuid.UUID
+
+func (cu *CustomUUID) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("could not scan type %T into CustomUUID", value)
+	}
+	u, err := uuid.FromBytes(swapByteOrder(b))
+	if err != nil {
+		return err
+	}
+	*cu = CustomUUID(u)
+	return nil
+}
+
+// Implement the Valuer interface for CustomUUID
+func (cu CustomUUID) Value() (driver.Value, error) {
+	u := uuid.UUID(cu)
+	return swapByteOrder(u[:]), nil
+}
+
+func (cu CustomUUID) String() string {
+	var buf [36]byte
+	encodeHex(buf[:], cu)
+	return string(buf[:])
+}
+
+func encodeHex(dst []byte, cu CustomUUID) {
+	hex.Encode(dst, cu[:4])
+	dst[8] = '-'
+	hex.Encode(dst[9:13], cu[4:6])
+	dst[13] = '-'
+	hex.Encode(dst[14:18], cu[6:8])
+	dst[18] = '-'
+	hex.Encode(dst[19:23], cu[8:10])
+	dst[23] = '-'
+	hex.Encode(dst[24:], cu[10:])
+}
+
+// Swap the byte order for MSSQL
+func swapByteOrder(b []byte) []byte {
+	return []byte{
+		b[3], b[2], b[1], b[0],
+		b[5], b[4],
+		b[7], b[6],
+		b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15],
+	}
+}
+
 type User struct {
-	ID        uuid.UUID  `json:"id"`
+	ID        CustomUUID `gorm:"type:uniqueidentifier;primaryKey"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at"`

@@ -38,7 +38,7 @@ func (c *UserConstruct) Create(userRequest structs.CreateUser) (user *model.User
 	}
 
 	newUser := model.User{
-		ID:       uuid.New(),
+		ID:       model.CustomUUID(uuid.New()),
 		Username: userRequest.Username,
 		Email:    userRequest.Email,
 		Password: hash,
@@ -82,9 +82,8 @@ func (c *UserConstruct) GetUser(param map[string]interface{}) (result *model.Use
 }
 
 func (c *UserConstruct) Delete(id string) error {
-	result := c.db.DigiEps.Debug().Delete(&model.User{
-		ID: uuid.MustParse(id),
-	})
+	result := c.db.DigiEps.Debug().Exec("DELETE FROM users WHERE id = ?", id)
+
 	if result.Error != nil {
 		return result.Error
 	}
