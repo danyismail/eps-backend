@@ -188,6 +188,7 @@ type CekLabaRugi struct {
 	Laba float64 `json:"laba"`
 	Rugi float64 `json:"rugi"`
 }
+
 type MarginReseller struct {
 	KodeReseller string  `json:"kode_reseller"`
 	Nama         string  `json:"nama"`
