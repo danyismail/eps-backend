@@ -15,6 +15,8 @@ type DBConnection struct {
 	DigiEps     *gorm.DB
 	Amazone     *gorm.DB
 	Eps         *gorm.DB
+	Backup      *gorm.DB
+	Otodev      *gorm.DB
 }
 
 func New() (DBConnection, error) {
