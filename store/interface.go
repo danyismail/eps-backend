@@ -59,3 +59,13 @@ type ResellerStore interface {
 	GetLabaHourly(path string) ([][]model.CekLabaHourly, error)
 	GetLabaRugi(path, from, to string) ([]model.CekLabaRugi, error)
 }
+
+type MarginStore interface {
+	ByReseller(path, startDt, endDt string) ([]model.MarginReseller, error)
+	BySupplier(path, startDt, endDt string) ([]model.MarginSupplier, error)
+	ByProvider(path, startDt, endDt string) ([]model.MarginProvider, error)
+}
+
+type HubStore interface {
+	GetBrandRevenue(startDt, endDt string) ([]model.BrandRevenue, error)
+}

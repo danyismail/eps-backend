@@ -19,6 +19,8 @@ type Handler struct {
 	snStore          store.SNStore
 	resellerStore    store.ResellerStore
 	userStore        store.UserStore
+	marginStore      store.MarginStore
+	hubStore         store.HubStore
 }
 
 func NewHandler(db db.DBConnection, e *echo.Echo) *Handler {
@@ -33,5 +35,7 @@ func NewHandler(db db.DBConnection, e *echo.Echo) *Handler {
 		snStore:          store.NewSNStore(db),
 		resellerStore:    store.NewResellerStore(db),
 		userStore:        store.NewUserStore(db),
+		marginStore:      store.NewMarginStore(db),
+		hubStore:         store.NewHubStore(db),
 	}
 }

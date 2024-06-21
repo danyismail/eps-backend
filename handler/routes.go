@@ -64,6 +64,15 @@ func (h *Handler) Register(v1 *echo.Group) {
 	reseller.GET("/:e/list", h.ListSupplier)
 	reseller.GET("/:e/laba/hourly", h.GetLabaHourly)
 	reseller.GET("/:e/labarugi", h.GetLabaRugi)
+
+	margin := v1.Group("/margin", customJWTMiddleware)
+	margin.GET("/:e/reseller", h.GetMarginReseller)
+	margin.GET("/:e/supplier", h.GetMarginSupplier)
+	margin.GET("/:e/provider", h.GetMarginProvider)
+
+	hub := v1.Group("/hub", customJWTMiddleware)
+	hub.GET("/brand-revenue", h.GetBrandRevenue)
+
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {
