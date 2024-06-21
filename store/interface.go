@@ -65,3 +65,7 @@ type MarginStore interface {
 	BySupplier(path, startDt, endDt string) ([]model.MarginSupplier, error)
 	ByProvider(path, startDt, endDt string) ([]model.MarginProvider, error)
 }
+
+type HubStore interface {
+	GetBrandRevenue(startDt, endDt string) ([]model.BrandRevenue, error)
+}
