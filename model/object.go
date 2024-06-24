@@ -213,3 +213,12 @@ type MarginProvider struct {
 	Penjualan float64 `json:"penjualan"`
 	Laba      float64 `json:"laba"`
 }
+
+type Dbs struct {
+	Name string
+	Cnx  *gorm.DB
+}
+
+type PPH struct {
+	TotalPph float64 `json:"total_pph"`
+}
