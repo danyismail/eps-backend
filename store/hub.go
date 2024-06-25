@@ -125,9 +125,14 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 	case "yesterday":
 		startDt = " tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) "
 		endDt = " tgl_entri < CAST(GETDATE() AS DATE) "
-	case "beforeYesterday":
-		startDt = " tgl_entri >= DATEADD(DAY, -2, CAST(GETDATE() AS DATE)) "
-		endDt = " tgl_entri < DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) "
+	default:
+		if endDt != "" {
+			startDt = fmt.Sprintf(" tgl_entri >= '%s'", startDt)
+			endDt = fmt.Sprintf(" tgl_entri <= '%s'", endDt)
+		} else {
+			startDt = " tgl_entri >= CAST(GETDATE() AS DATE) "
+			endDt = " tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) "
+		}
 	}
 
 	sql := "SELECT FORMAT(sum(t.harga),'0.######') penjualan, FORMAT(sum(t.harga_beli),'0.######') pembelian, "
