@@ -195,7 +195,7 @@ func (h *Handler) Login(c echo.Context) error {
 		})
 	}
 
-	token, err := utils.GenerateJWT(os.Getenv("JWT_SECRET"), *user, 15)
+	token, exp, err := utils.GenerateJWT(os.Getenv("JWT_SECRET"), *user, 15)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.SimpleCommonResponse{
 			StatusCode: http.StatusForbidden,
@@ -207,9 +207,10 @@ func (h *Handler) Login(c echo.Context) error {
 		StatusCode: http.StatusOK,
 		Message:    "success",
 		Data: structs.LoginResponse{
-			Username: user.Username,
-			Role:     user.Role,
-			Token:    token,
+			Username:  user.Username,
+			Role:      user.Role,
+			Token:     token,
+			ExpiresAt: exp,
 		},
 	})
 }
