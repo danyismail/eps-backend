@@ -21,9 +21,10 @@ type SimpleCommonResponse struct {
 }
 
 type LoginResponse struct {
-	Username string `json:"username"`
-	Role     string `json:"role"`
-	Token    string `json:"token"`
+	Username  string `json:"username"`
+	Role      string `json:"role"`
+	Token     string `json:"token"`
+	ExpiresAt int64  `json:"expires_at"`
 }
 
 type UserResponse struct {

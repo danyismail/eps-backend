@@ -26,7 +26,7 @@ type (
 	}
 )
 
-func GenerateJWT(secret string, user model.User, tokenLifeTime int) (string, error) {
+func GenerateJWT(secret string, user model.User, tokenLifeTime int) (string, int64, error) {
 	claims := CustomJwtPayload{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(tokenLifeTime) * time.Minute)),
@@ -43,9 +43,9 @@ func GenerateJWT(secret string, user model.User, tokenLifeTime int) (string, err
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := jwtToken.SignedString([]byte(secret))
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
-	return token, err
+	return token, claims.ExpiresAt.Unix(), err
 }
 
 func ParseJWT(secret, token string) (*CustomJwtPayload, error) {
