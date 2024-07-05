@@ -62,7 +62,10 @@ func (c *SalesConstruct) GetPPH(path string) ([]model.SalesReport, error) {
 			'EPS6973',
 			'EPS6957',
 			'EPS6995',
-			'EPS0935'
+			'EPS0935',
+			'EPS7061',
+			'EPS7026',
+			'EPS7051'
 		) AND t.tgl_entri BETWEEN (CONVERT(DATETIME,
 			CONVERT(DATE,
 			GETDATE()))) AND (
