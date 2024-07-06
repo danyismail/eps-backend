@@ -118,6 +118,7 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 		}
 	}()
 
+	flagSameDate := false
 	switch startDt {
 	case "":
 		startDt = " tgl_entri >= CAST(GETDATE() AS DATE) "
@@ -127,22 +128,33 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 		endDt = " tgl_entri < CAST(GETDATE() AS DATE) "
 	default:
 		if endDt != "" {
-			startDt = fmt.Sprintf(" tgl_entri >= '%s'", startDt)
-			endDt = fmt.Sprintf(" tgl_entri <= '%s'", endDt)
+			if startDt == endDt {
+				flagSameDate = true
+				startDt = fmt.Sprintf(" CAST(tgl_entri AS DATE) = '%s'", startDt)
+				endDt = ""
+			} else {
+				startDt = fmt.Sprintf(" tgl_entri >= '%s'", startDt)
+				endDt = fmt.Sprintf(" tgl_entri <= '%s'", endDt)
+			}
 		} else {
 			startDt = " tgl_entri >= CAST(GETDATE() AS DATE) "
 			endDt = " tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) "
 		}
 	}
 
-	sql := "SELECT FORMAT(sum(t.harga),'0.######') penjualan, FORMAT(sum(t.harga_beli),'0.######') pembelian, "
+	sql := "SELECT FORMAT(sum(t.harga),'0.######') penjualan, FORMAT(sum(t.harga_beli),'0.######') pembelian, COUNT(1) AS trx,"
 	sql = fmt.Sprintf("%s CASE WHEN sum(t.harga) - sum(t.harga_beli) > 0 THEN 0 WHEN sum(t.harga) - sum(t.harga_beli) < 0 THEN FORMAT(sum(t.harga) - sum(t.harga_beli),'0.######')", sql)
 	sql = fmt.Sprintf("%s END AS tekor, FORMAT(sum(t.harga - p.harga_jual),'0.######') bakar, FORMAT(sum(t.harga) - sum(t.harga_beli),'0.######') laba, FORMAT(sum(komisi) ,'0.######') komisi, 0 ppn11, 0 pph22", sql)
 	sql = fmt.Sprintf("%s FROM transaksi t LEFT JOIN produk p on t.kode_produk = p.kode LEFT JOIN reseller r ON t.kode_reseller = r.kode ", sql)
-	sql = fmt.Sprintf("%s WHERE status = 20 AND %s AND %s", sql, startDt, endDt)
+	if flagSameDate {
+		sql = fmt.Sprintf("%s WHERE status = 20 AND %s ", sql, startDt)
+	} else {
+		sql = fmt.Sprintf("%s WHERE status = 20 AND %s AND %s", sql, startDt, endDt)
+	}
 
 	//1. get brand revenue
 	var brandsRevenue *model.BrandRevenue
+	fmt.Println(db.Name)
 	if err := db.Cnx.Debug().Raw(sql).Scan(&brandsRevenue).Error; err != nil {
 		result <- nil
 		return
@@ -150,7 +162,12 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 
 	//2. get member active
 	member_active := 0
-	countActiveMember := fmt.Sprintf("SELECT COUNT(DISTINCT kode_reseller) AS member_active FROM transaksi WHERE status = 20 AND %s AND %s", startDt, endDt)
+	countActiveMember := ""
+	if flagSameDate {
+		countActiveMember = fmt.Sprintf("SELECT COUNT(DISTINCT kode_reseller) AS member_active FROM transaksi WHERE status = 20 AND %s ", startDt)
+	} else {
+		countActiveMember = fmt.Sprintf("SELECT COUNT(DISTINCT kode_reseller) AS member_active FROM transaksi WHERE status = 20 AND %s AND %s", startDt, endDt)
+	}
 	if err := db.Cnx.Debug().Raw(countActiveMember).Scan(&member_active).Error; err != nil {
 		log.Printf("failed to query data: %v", err)
 		result <- nil
@@ -158,7 +175,38 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 	}
 
 	//3. get pph 22
-	getPPH12 := fmt.Sprintf(`
+	getPPH22 := ""
+	if flagSameDate {
+		getPPH22 = fmt.Sprintf(`
+	SELECT
+		SUM(pph) AS total_pph
+	FROM
+	(
+		SELECT
+			COUNT(1) AS trx,
+			SUM(t.harga_beli) AS pembelian,
+			SUM(t.harga) AS penjualan,
+			SUM(t.harga) - SUM(t.harga_beli) AS laba,
+			SUM(t.harga) * 0.005 AS pph
+		FROM
+			transaksi t
+		JOIN produk p on
+			t.kode_produk = p.kode
+		WHERE
+			status = 20
+			AND (
+				(t.kode_produk NOT LIKE '%%NF%%' AND kode_reseller IN ('EPS0695', 'EPS0634', 'EPS0840', 'EPS0935'))
+				OR (t.kode_produk LIKE '%%FZNF%%' AND kode_reseller IN ('EPS6995', 'EPS6890', 'EPS6957', 'EPS6973', 'EPS0921'))
+				OR (t.kode_produk NOT LIKE '%%NF%%' AND kode_reseller IN ('EPS6995', 'EPS6890', 'EPS6957', 'EPS6973', 'EPS0921'))
+				OR (t.kode_produk LIKE '%%SBNONF%%' AND kode_reseller = 'EPS0712')
+				OR (t.kode_produk NOT LIKE '%%NF%%' AND kode_reseller = 'EPS0712')
+			)
+			AND p.kode_operator NOT IN ('PLN', 'PLN01', 'PLN02', 'ECOMM', 'GAMES')
+			AND %s 
+	) pph22;
+	`, startDt)
+	} else {
+		getPPH22 = fmt.Sprintf(`
 	SELECT
 		SUM(pph) AS total_pph
 	FROM
@@ -186,9 +234,10 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 			AND %s AND %s
 	) pph22;
 	`, startDt, endDt)
+	}
 
 	var pphCount model.PPH
-	if err := db.Cnx.Raw(getPPH12).Debug().Scan(&pphCount).Error; err != nil {
+	if err := db.Cnx.Raw(getPPH22).Debug().Scan(&pphCount).Error; err != nil {
 		result <- nil
 		return
 	}
