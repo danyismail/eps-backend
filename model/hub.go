@@ -3,6 +3,7 @@ package model
 type BrandRevenue struct {
 	Server    string  `json:"server"`
 	Member    int     `json:"member"`
+	Trx       int     `json:"trx"`
 	Penjualan float64 `json:"penjualan"`
 	Pembelian float64 `json:"pembelian"`
 	Tekor     float64 `json:"tekor"`
