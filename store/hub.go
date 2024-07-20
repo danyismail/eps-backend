@@ -3,6 +3,7 @@ package store
 import (
 	"eps-backend/db"
 	"eps-backend/model"
+	"eps-backend/utils"
 	"fmt"
 	"log"
 	"sync"
@@ -254,4 +255,90 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 	brandsRevenue.Pph22 = pphCount.TotalPph
 	result <- brandsRevenue
 
+}
+
+func (c *HubConstruct) GetBrandCategoryRevenue(startDt, endDt, path string) (model.DetailResponse, error) {
+	cnx := utils.SelectConn(path, c.db)
+	result := []model.BrandCategoryRevenue{}
+
+	whereClause := fmt.Sprintf(" where t.status = 20 AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s' group by pk.provider, pk.jenis_produk", startDt, endDt)
+	if startDt == "yesterday" {
+		whereClause = " where tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND tgl_entri < CAST(GETDATE() AS DATE) group by pk.provider, pk.jenis_produk"
+	} else if startDt == "" || endDt == "" {
+		whereClause = " where tgl_entri >= CAST(GETDATE() AS DATE) AND tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) group by pk.provider, pk.jenis_produk"
+	}
+
+	query := "select pk.provider, pk.jenis_produk, count(1) as trx, sum(t.harga - t.harga_beli) as laba from transaksi t"
+	query = fmt.Sprintf("%s join produk p on t.kode_produk = p.kode left join produk_klasifikasi pk on pk.kode_produk = t.kode_produk", query)
+	query += whereClause
+	query = fmt.Sprintf("%s having pk.provider in (SELECT DISTINCT(provider) from produk_klasifikasi where provider NOT IN ('#N/A')) order by pk.provider,pk.jenis_produk  desc", query)
+
+	if err := cnx.Raw(query).Scan(&result).Error; err != nil {
+		return model.DetailResponse{}, err
+	}
+
+	if len(result) > 0 {
+		return mappingBrandCategoryRevenue(result), nil
+
+	}
+	return model.DetailResponse{}, nil
+}
+
+func mappingBrandCategoryRevenue(data []model.BrandCategoryRevenue) model.DetailResponse {
+	operator := []string{
+		"AXIS-XL",
+		"BANK",
+		"ECOMMERCE",
+		"GAME",
+		"INDOSAT",
+		"PLN",
+		"SMARTFREN",
+		"TELKOMSEL",
+		"THREE",
+	}
+
+	result := map[string]model.Response{}
+	for _, o := range operator {
+		categories := []model.BrandCategoryData{}
+		var totalTrx int
+		var totalLaba float64
+		for _, v := range data {
+			if v.Provider == o {
+				totalTrx += v.Trx
+				totalLaba += v.Laba
+				category := model.BrandCategoryData{
+					JenisProduk: v.JenisProduk,
+					Trx:         v.Trx,
+					Laba:        v.Laba,
+				}
+				if v.Provider == "ECOMMERCE" || v.Provider == "PLN" || v.Provider == "GAME" {
+					category.JenisProduk = "OTHER"
+				}
+				categories = append(categories, category)
+				result[o] = model.Response{
+					TotalTrx:  totalTrx,
+					TotalLaba: totalLaba,
+					Category:  categories,
+				}
+			}
+		}
+	}
+	subTotal, subLaba := subTotal(result)
+	detail := model.DetailResponse{
+		Response: result,
+		SubTotal: subTotal,
+		SubLaba:  subLaba,
+	}
+	return detail
+}
+
+func subTotal(data map[string]model.Response) (total_pph int, laba float64) {
+	var subTotalTrx int
+	var subTotalLaba float64
+	for _, v := range data {
+		subTotalTrx += v.TotalTrx
+		subTotalLaba += v.TotalLaba
+
+	}
+	return subTotalTrx, subTotalLaba
 }
