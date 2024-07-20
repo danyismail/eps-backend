@@ -72,6 +72,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 
 	hub := v1.Group("/hub", customJWTMiddleware)
 	hub.GET("/brand-revenue", h.GetBrandRevenue)
+	hub.GET("/:cnx/brand-category-revenue", h.GetBrandCategoryRevenue)
 
 }
 

@@ -28,3 +28,25 @@ func (h *Handler) GetBrandRevenue(c echo.Context) error {
 	})
 
 }
+
+func (h *Handler) GetBrandCategoryRevenue(c echo.Context) error {
+	h.e.Logger.Info("::GetBrandCategoryRevenue Started::")
+	startDt := c.QueryParam("startDt")
+	endDt := c.QueryParam("endDt")
+
+	result, err := h.hubStore.GetBrandCategoryRevenue(startDt, endDt, c.Param("cnx"))
+	if err != nil {
+		h.e.Logger.Error(err)
+		h.errorBot.SendMessage(err)
+		return c.JSON(http.StatusInternalServerError, structs.CommonResponse{
+			Data:       nil,
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		})
+	}
+	return c.JSON(http.StatusOK, structs.CommonResponse{
+		Data:       result,
+		StatusCode: http.StatusOK,
+		Message:    "success",
+	})
+}

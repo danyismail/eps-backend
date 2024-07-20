@@ -68,4 +68,5 @@ type MarginStore interface {
 
 type HubStore interface {
 	GetBrandRevenue(startDt, endDt string) ([]model.BrandRevenue, error)
+	GetBrandCategoryRevenue(startDt, endDt, path string) (model.DetailResponse, error)
 }
