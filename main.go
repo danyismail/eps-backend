@@ -22,7 +22,7 @@ func main() {
 		log.Fatalln("error loading .env file")
 	}
 
-	//connection pooling
+	//DATABASE
 	listConn, err := db.New()
 	if err != nil {
 		log.Fatalln(err)
