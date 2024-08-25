@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"sync"
+
+	"gorm.io/gorm"
 )
 
 type HubConstruct struct {
@@ -50,7 +52,7 @@ func (c *HubConstruct) GetBrandRevenue(startDt, endDt string) ([]model.BrandReve
 	results := make(chan *model.BrandRevenue, len(listCnx))
 	for _, v := range listCnx {
 		wg.Add(1)
-		go getBrandRevenue(v, startDt, endDt, results, &wg)
+		go processBrandReveneu(v, startDt, endDt, results, &wg)
 	}
 
 	wg.Wait()
@@ -97,8 +99,10 @@ func (c *HubConstruct) GetBrandRevenue(startDt, endDt string) ([]model.BrandReve
 	return allResults, nil
 }
 
-func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.BrandRevenue, wg *sync.WaitGroup) {
+func processBrandReveneu(db model.Dbs, startDt, endDt string, result chan<- *model.BrandRevenue, wg *sync.WaitGroup) {
 	defer wg.Done()
+	startDateExist := startDt
+	endDtExist := endDt
 
 	// start a new transaction.
 	tx := db.Cnx.Begin()
@@ -157,6 +161,7 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 	var brandsRevenue *model.BrandRevenue
 	fmt.Println(db.Name)
 	if err := db.Cnx.Debug().Raw(sql).Scan(&brandsRevenue).Error; err != nil {
+		log.Printf("failed to query brand revenue : %v", err)
 		result <- nil
 		return
 	}
@@ -243,6 +248,14 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 		return
 	}
 
+	//4. get loss revenue
+	lossRevenue, err := getLossRevenue(startDateExist, endDtExist, db.Cnx)
+	if err != nil {
+		log.Printf("failed to query loss revenue: %v", err)
+		result <- nil
+		return
+	}
+
 	// if everything is successful, commit the transaction.
 	if err := tx.Commit().Error; err != nil {
 		log.Printf("failed to commit transaction: %v", err)
@@ -252,6 +265,7 @@ func getBrandRevenue(db model.Dbs, startDt, endDt string, result chan<- *model.B
 
 	brandsRevenue.Server = db.Name
 	brandsRevenue.Member = member_active
+	brandsRevenue.Tekor = lossRevenue
 	brandsRevenue.Pph22 = pphCount.TotalPph
 	result <- brandsRevenue
 
@@ -341,4 +355,35 @@ func subTotal(data map[string]model.Response) (total_pph int, laba float64) {
 
 	}
 	return subTotalTrx, subTotalLaba
+}
+
+// get loss revenue
+func getLossRevenue(startDt, endDt string, conn *gorm.DB) (float64, error) {
+	var lossRevenue float64
+
+	fmt.Println(startDt, "start date")
+	fmt.Println(endDt, "end date")
+
+	whereClause := fmt.Sprintf(" where t.status = 20 AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s'", startDt, endDt)
+	if startDt == "yesterday" {
+		whereClause = " where tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND tgl_entri < CAST(GETDATE() AS DATE)"
+	}
+	if startDt == "" || endDt == "" {
+		whereClause = " where tgl_entri >= CAST(GETDATE() AS DATE) AND tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE))"
+	}
+	query := `SELECT SUM(tekor) AS total_tekor FROM (`
+	innerQuery := ` SELECT 
+			CASE
+				WHEN t.harga - t.harga_beli > 0 THEN 0
+				WHEN t.harga - t.harga_beli < 0 THEN FORMAT(t.harga - t.harga_beli, '0.######')
+			END AS tekor
+		FROM transaksi t `
+	outerQuery := ") AS subquery;"
+	fmt.Println(whereClause, "check query")
+	query = fmt.Sprintf("%s %s %s %s", query, innerQuery, whereClause, outerQuery)
+	err := conn.Raw(query).Scan(&lossRevenue).Error
+	if err != nil {
+		return 0, err
+	}
+	return lossRevenue, nil
 }
