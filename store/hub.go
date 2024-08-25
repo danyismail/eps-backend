@@ -287,7 +287,7 @@ func (c *HubConstruct) GetBrandCategoryRevenue(startDt, endDt, path string) (mod
 	query += whereClause
 	query = fmt.Sprintf("%s having pk.provider in (SELECT DISTINCT(provider) from produk_klasifikasi where provider NOT IN ('#N/A')) order by pk.provider,pk.jenis_produk  desc", query)
 
-	if err := cnx.Raw(query).Scan(&result).Error; err != nil {
+	if err := cnx.Debug().Raw(query).Scan(&result).Error; err != nil {
 		return model.DetailResponse{}, err
 	}
 
@@ -371,17 +371,17 @@ func getLossRevenue(startDt, endDt string, conn *gorm.DB) (float64, error) {
 	if startDt == "" || endDt == "" {
 		whereClause = " where tgl_entri >= CAST(GETDATE() AS DATE) AND tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE))"
 	}
-	query := `SELECT SUM(tekor) AS total_tekor FROM (`
+	query := `SELECT COALESCE(SUM(tekor),0) AS total_tekor FROM (`
 	innerQuery := ` SELECT 
 			CASE
-				WHEN t.harga - t.harga_beli > 0 THEN 0
-				WHEN t.harga - t.harga_beli < 0 THEN FORMAT(t.harga - t.harga_beli, '0.######')
+				WHEN COALESCE(t.harga, 0) - COALESCE(t.harga_beli, 0) > 0 THEN 0
+				WHEN COALESCE(t.harga, 0) - COALESCE(t.harga_beli, 0) < 0 THEN FORMAT(t.harga - t.harga_beli, '0.######')
 			END AS tekor
 		FROM transaksi t `
 	outerQuery := ") AS subquery;"
 	fmt.Println(whereClause, "check query")
 	query = fmt.Sprintf("%s %s %s %s", query, innerQuery, whereClause, outerQuery)
-	err := conn.Raw(query).Scan(&lossRevenue).Error
+	err := conn.Debug().Raw(query).Scan(&lossRevenue).Error
 	if err != nil {
 		return 0, err
 	}
