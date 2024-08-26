@@ -60,21 +60,24 @@ func (c *KpiConstruct) GetAll(path string, startDt string, endDt string, pageNum
 	}
 
 	//count all data
-	countQuery := strings.Replace(sql, "*", "COUNT(1)", -1)
-	if err := c.db.DigiAmazone.Raw(countQuery).Scan(&attr.Total).Error; err != nil {
+	const count = "COUNT(1)"
+	kpiParam := utils.GetKPIConfig(path)
+	fmt.Println("connection from kpi config is : ", path, "=> ", kpiParam)
+	countQuery := strings.Replace(sql, "*", count, -1)
+	if err := utils.SelectConn(path, c.db).Raw(countQuery).Scan(&attr.Total).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("all kpi : ", attr.Total)
 
-	querySuccess := fmt.Sprintf("%s %s", sql, " AND kpi <= 180")
-	countSuccess := strings.Replace(querySuccess, "*", "COUNT(1)", -1)
+	querySuccess := fmt.Sprintf("%s %s %s", sql, " AND kpi <= ", kpiParam)
+	countSuccess := strings.Replace(querySuccess, "*", count, -1)
 	if err := utils.SelectConn(path, c.db).Raw(countSuccess).Scan(&attr.Success).Error; err != nil {
 		return nil, attr, err
 	}
 	fmt.Println("success kpi : ", attr.Success)
 
-	queryFailed := fmt.Sprintf("%s %s", sql, " AND kpi > 180")
-	countFailed := strings.Replace(queryFailed, "*", "COUNT(1)", -1)
+	queryFailed := fmt.Sprintf("%s %s %s", sql, " AND kpi > ", kpiParam)
+	countFailed := strings.Replace(queryFailed, "*", count, -1)
 	if err := utils.SelectConn(path, c.db).Raw(countFailed).Scan(&attr.Failed).Error; err != nil {
 		return nil, attr, err
 	}
@@ -85,8 +88,7 @@ func (c *KpiConstruct) GetAll(path string, startDt string, endDt string, pageNum
 		sql = fmt.Sprintf("%s ORDER BY (tgl_entri) DESC OFFSET %d ROWS FETCH NEXT %d ROW ONLY", sql, offset, fetch)
 	}
 
-	conn := utils.SelectConn(path, c.db)
-	if err := conn.Raw(sql).Debug().Scan(&kpis).Error; err != nil {
+	if err := utils.SelectConn(path, c.db).Debug().Raw(sql).Scan(&kpis).Error; err != nil {
 		return nil, attr, err
 	}
 
