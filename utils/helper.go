@@ -20,6 +20,8 @@ func SelectConn(path string, conn db.DBConnection) *gorm.DB {
 		return conn.Backup
 	case OTODEV:
 		return conn.Otodev
+	case SERVERONE:
+		return conn.ServerOne
 	default:
 		return conn.DigiAmazone
 	}

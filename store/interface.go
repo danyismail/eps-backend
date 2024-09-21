@@ -70,3 +70,7 @@ type HubStore interface {
 	GetBrandRevenue(startDt, endDt string) ([]model.BrandRevenue, error)
 	GetBrandCategoryRevenue(startDt, endDt, path string) (model.DetailResponse, error)
 }
+
+type RevenueStore interface {
+	GetRevenueByHour(dbConn string) ([][]model.RevenuePerHour, error)
+}

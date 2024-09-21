@@ -74,6 +74,9 @@ func (h *Handler) Register(v1 *echo.Group) {
 	hub.GET("/brand-revenue", h.GetBrandRevenue)
 	hub.GET("/:cnx/brand-category-revenue", h.GetBrandCategoryRevenue)
 
+	rev := v1.Group("/revenue", customJWTMiddleware)
+	rev.GET("/:e/hour", h.GetRevenueHour)
+
 }
 
 func (h *Handler) HttpErrorHandler(e *echo.Echo) {
