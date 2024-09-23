@@ -189,13 +189,14 @@ func (h *Handler) Login(c echo.Context) error {
 	err = utils.ComparePassword(user.Password, req.Password)
 	if err != nil {
 
-		return c.JSON(http.StatusInternalServerError, structs.SimpleCommonResponse{
+		return c.JSON(http.StatusOK, structs.SimpleCommonResponse{
 			Message:    "email or password is wrong",
 			StatusCode: http.StatusForbidden,
 		})
 	}
 
-	token, exp, err := utils.GenerateJWT(os.Getenv("JWT_SECRET"), *user, 15)
+	jwtTimeout, _ := strconv.Atoi(os.Getenv("JWT_TIMEOUT"))
+	token, exp, err := utils.GenerateJWT(os.Getenv("JWT_SECRET"), *user, jwtTimeout)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, structs.SimpleCommonResponse{
 			StatusCode: http.StatusForbidden,
