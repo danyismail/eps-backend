@@ -15,7 +15,7 @@ func NewRevenueStore(db db.DBConnection) *RevenueConstruct {
 }
 
 func (c *RevenueConstruct) GetRevenueByHour(path string) ([][]model.RevenuePerHour, error) {
-	query := "SELECT * FROM v_revenue_3h where MONTH(tgl_entri) = MONTH(GETDATE()) AND YEAR(tgl_entri) = YEAR(GETDATE()) ORDER BY tgl_entri ASC"
+	query := "SELECT * FROM v_revenue_3h_month ORDER BY tgl_entri ASC"
 	// execute query
 	var result []model.RevenuePerHour
 	if err := utils.SelectConn(path, c.db).Debug().Raw(query).Scan(&result).Error; err != nil {
