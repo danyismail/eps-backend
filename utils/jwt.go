@@ -33,11 +33,11 @@ func GenerateJWT(secret string, user model.User, tokenLifeTime int) (string, int
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "eps-backend",
-			Subject:   user.ID.String(),
-			Audience:  []string{user.Role},
+			Subject:   fmt.Sprintf("%d", user.ID),
+			Audience:  []string{user.Role.Name},
 		},
 		Username: user.Username,
-		Role:     user.Role,
+		Role:     user.Role.Name,
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

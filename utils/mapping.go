@@ -14,7 +14,7 @@ func MappingUserResponse(users []model.User) []structs.UserResponse {
 			UpdatedAt: v.UpdatedAt,
 			Username:  v.Username,
 			Email:     v.Email,
-			Role:      v.Role,
+			Role:      v.Role.Name,
 		}
 		mapUsers = append(mapUsers, user)
 	}

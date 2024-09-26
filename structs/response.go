@@ -2,8 +2,6 @@ package structs
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type CommonResponse struct {
@@ -30,7 +28,7 @@ type LoginResponse struct {
 }
 
 type UserResponse struct {
-	ID        uuid.UUID `json:"id"`
+	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Username  string    `json:"username"`

@@ -91,12 +91,12 @@ func (h *Handler) GetAllPaginated(c echo.Context) error {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param id query string true "query param"
+// @Param id query string true "param"
 // @Success 200 {object} structs.CommonResponse
 // @Router /api/user/search [get]
 func (h *Handler) GetByID(c echo.Context) error {
 	h.e.Logger.Info("::GetByID Started::")
-	id := c.QueryParam("id")
+	id := c.Param("id")
 	user, err := h.userStore.GetUser(map[string]interface{}{
 		"id": id,
 	})
@@ -106,6 +106,13 @@ func (h *Handler) GetByID(c echo.Context) error {
 			Message:    err.Error(),
 		})
 	}
+	if user.ID == 0 {
+		return c.JSON(http.StatusOK, structs.SimpleCommonResponse{
+			StatusCode: http.StatusOK,
+			Message:    "success",
+			Data:       "user not found",
+		})
+	}
 	return c.JSON(http.StatusOK, structs.SimpleCommonResponse{
 		StatusCode: http.StatusOK,
 		Message:    "success",
@@ -113,7 +120,7 @@ func (h *Handler) GetByID(c echo.Context) error {
 			ID:       user.ID,
 			Username: user.Username,
 			Email:    user.Email,
-			Role:     user.Role,
+			Role:     user.Role.Name,
 		},
 	})
 }
@@ -129,8 +136,9 @@ func (h *Handler) GetByID(c echo.Context) error {
 // @Router /api/user/delete [delete]
 func (h *Handler) Delete(c echo.Context) error {
 	h.e.Logger.Info("::Delete Started::")
-	id := c.QueryParam("id")
-	err := h.userStore.Delete(id)
+	id := c.Param("id")
+	i, _ := strconv.Atoi(id)
+	err := h.userStore.Delete(uint(i))
 	if err != nil {
 		return c.JSON(http.StatusOK, structs.SimpleCommonResponse{
 			StatusCode: http.StatusInternalServerError,
@@ -209,7 +217,7 @@ func (h *Handler) Login(c echo.Context) error {
 		Message:    "success",
 		Data: structs.LoginResponse{
 			Username:  user.Username,
-			Role:      user.Role,
+			Role:      user.Role.Name,
 			Token:     token,
 			ExpiresAt: exp,
 		},

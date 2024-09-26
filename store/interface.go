@@ -10,7 +10,7 @@ type UserStore interface {
 	GetAll(page, view int) (users []model.User, err error)
 	Count() int64
 	GetUser(param map[string]interface{}) (result *model.User, err error)
-	Delete(id string) error
+	Delete(id uint) error
 }
 
 type KpiStore interface {

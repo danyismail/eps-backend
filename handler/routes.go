@@ -23,8 +23,8 @@ func (h *Handler) Register(v1 *echo.Group) {
 	user := v1.Group("/user", customJWTMiddleware)
 	user.POST("/create", h.CreateUser)
 	user.GET("/list", h.GetAllPaginated)
-	user.GET("/search", h.GetByID)
-	user.DELETE("/delete", h.Delete)
+	user.GET("/search/:id", h.GetByID)
+	user.DELETE("/delete/:id", h.Delete)
 
 	kpi := v1.Group("/kpi", customJWTMiddleware)
 	kpi.POST("/:e/list", h.GetAll)

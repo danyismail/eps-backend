@@ -3,19 +3,22 @@ package model
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	ID        uuid.UUID  `json:"id"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at"`
-	Username  string     `json:"username"`
-	Email     string     `json:"email"`
-	Role      string     `json:"role"`
-	Password  string     `json:"password"`
+	gorm.Model
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	RoleID   int    `json:"role_id"`
+	Role     Role   `gorm:"foreignKey:RoleID" json:"role"`
+	Password string `json:"password"`
+}
+
+type Role struct {
+	gorm.Model
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type VKpis struct {
