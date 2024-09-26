@@ -45,7 +45,7 @@ type CreateUser struct {
 	Username string `json:"username" required:"max:6" example:"John Doe"`
 	Email    string `json:"email" example:"example@email.com"`
 	Password string `json:"password" example:"password123"`
-	Role     string `json:"role" example:"superadmin"`
+	RoleID   int    `json:"role_id" example:"superadmin"`
 }
 
 func (u *CreateUser) Binding(c echo.Context) error {
