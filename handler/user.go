@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -118,7 +117,7 @@ func (h *Handler) GetByID(c echo.Context) error {
 		StatusCode: http.StatusOK,
 		Message:    "success",
 		Data: structs.UserResponse{
-			ID:       strings.ToUpper(user.ID.String()),
+			ID:       user.ID,
 			Username: user.Username,
 			Email:    user.Email,
 			Role:     user.Role.Name,
