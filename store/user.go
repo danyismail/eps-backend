@@ -63,7 +63,7 @@ func (c *UserConstruct) GetAll(page, view int) (users []model.User, err error) {
 		page = 1
 	}
 	if view == 0 {
-		view = 10
+		view = 50
 	}
 	offset := (page - 1) * view
 	userWithRole := c.db.DigiEps.Debug().

@@ -18,6 +18,7 @@ type DBConnection struct {
 	Backup      *gorm.DB
 	Otodev      *gorm.DB
 	ServerOne   *gorm.DB
+	ValuePulsa  *gorm.DB
 }
 
 func New() (DBConnection, error) {
@@ -63,6 +64,12 @@ func New() (DBConnection, error) {
 	USERNAME_SERVERONE := os.Getenv("USERNAME_SERVERONE")
 	PASSWORD_SERVERONE := os.Getenv("PASSWORD_SERVERONE")
 
+	DB_HOST_VALUEPULSA := os.Getenv("DB_HOST_VALUEPULSA")
+	DB_PORT_VALUEPULSA := os.Getenv("DB_PORT_VALUEPULSA")
+	DB_VALUEPULSA := os.Getenv("DB_VALUEPULSA")
+	USERNAME_VALUEPULSA := os.Getenv("USERNAME_VALUEPULSA")
+	PASSWORD_VALUEPULSA := os.Getenv("PASSWORD_VALUEPULSA")
+
 	if DB_HOST_DIGI == "" || DB_HOST_REPLICA == "" || DB_HOST_BACKUP == "" {
 		log.Fatalln("database credentials not define.")
 	}
@@ -75,6 +82,7 @@ func New() (DBConnection, error) {
 		"server=" + DB_HOST_BACKUP + "," + DB_PORT_BACKUP + ";user id=" + USERNAME_BACKUP + ";password=" + PASSWORD_BACKUP + ";encrypt=disable;database=" + DB_BACKUP,
 		"server=" + DB_HOST_OTODEV + "," + DB_PORT_OTODEV + ";user id=" + USERNAME_OTODEV + ";password=" + PASSWORD_OTODEV + ";encrypt=disable;database=" + DB_OTODEV,
 		"server=" + DB_HOST_SERVERONE + "," + DB_PORT_SERVERONE + ";user id=" + USERNAME_SERVERONE + ";password=" + PASSWORD_SERVERONE + ";encrypt=disable;database=" + DB_SERVERONE,
+		"server=" + DB_HOST_VALUEPULSA + "," + DB_PORT_VALUEPULSA + ";user id=" + USERNAME_VALUEPULSA + ";password=" + PASSWORD_VALUEPULSA + ";encrypt=disable;database=" + DB_VALUEPULSA,
 	}
 
 	for _, v := range listConnDB {
@@ -126,6 +134,12 @@ func New() (DBConnection, error) {
 				return instanceDB, err
 			}
 			instanceDB.ServerOne = db
+		case 7:
+			db, err := setConnectionDB("VALUEPULSA", v)
+			if err != nil {
+				return instanceDB, err
+			}
+			instanceDB.ValuePulsa = db
 		}
 	}
 	log.Println("successfully create all conn..")

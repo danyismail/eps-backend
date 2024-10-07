@@ -8,4 +8,5 @@ const (
 	BACKUP_AMAZONE  = "ba"
 	OTODEV          = "od"
 	SERVERONE       = "so"
+	VALUEPULSA      = "vp"
 )
