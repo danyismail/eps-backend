@@ -22,6 +22,8 @@ func SelectConn(path string, conn db.DBConnection) *gorm.DB {
 		return conn.Otodev
 	case SERVERONE:
 		return conn.ServerOne
+	case VALUEPULSA:
+		return conn.ValuePulsa
 	default:
 		return conn.DigiAmazone
 	}
