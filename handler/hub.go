@@ -33,8 +33,10 @@ func (h *Handler) GetBrandCategoryRevenue(c echo.Context) error {
 	h.e.Logger.Info("::GetBrandCategoryRevenue Started::")
 	startDt := c.QueryParam("startDt")
 	endDt := c.QueryParam("endDt")
+	useDb := c.Param("cnx")
+	code := c.QueryParam("code")
 
-	result, err := h.hubStore.GetBrandCategoryRevenue(startDt, endDt, c.Param("cnx"))
+	result, err := h.hubStore.GetBrandCategoryRevenue(startDt, endDt, useDb, code)
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)
