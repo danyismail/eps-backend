@@ -275,22 +275,26 @@ func (c *HubConstruct) GetBrandCategoryRevenue(startDt, endDt, path, code string
 	cnx := utils.SelectConn(path, c.db)
 	result := []model.BrandCategoryRevenue{}
 
-	whereClause := fmt.Sprintf(" where t.status = 20 AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s' group by pk.provider, pk.jenis_produk", startDt, endDt)
-	if startDt == "yesterday" {
-		whereClause = " where tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND tgl_entri < CAST(GETDATE() AS DATE) "
+	whereClause := fmt.Sprintf(" WHERE t.status = 20 AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s' GROUP BY pk.provider, pk.jenis_produk", startDt, endDt)
+	if startDt != "" {
+		if startDt == "yesterday" {
+			whereClause = " WHERE tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND tgl_entri < CAST(GETDATE() AS DATE) "
+		} else if startDt != "" && endDt != "" {
+			whereClause = fmt.Sprintf(" WHERE tgl_entri >= '%s' AND tgl_entri < '%s' ", startDt, endDt)
+		}
 	} else if startDt == "" || endDt == "" {
-		whereClause = " where tgl_entri >= CAST(GETDATE() AS DATE) AND tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) "
+		whereClause = " WHERE tgl_entri >= CAST(GETDATE() AS DATE) AND tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) "
 	}
 
 	if code != "" {
-		whereClause = fmt.Sprintf(" AND t.kode_reseller = '%s' ", code)
+		whereClause += fmt.Sprintf(" AND t.kode_reseller = '%s' ", code)
 	}
-	whereClause += " group by pk.provider, pk.jenis_produk "
+	whereClause += " GROUP BY pk.provider, pk.jenis_produk "
 
-	query := "select pk.provider, pk.jenis_produk, count(1) as trx, sum(t.harga - t.harga_beli) as laba from transaksi t"
-	query = fmt.Sprintf("%s join produk p on t.kode_produk = p.kode left join produk_klasifikasi pk on pk.kode_produk = t.kode_produk", query)
+	query := "SELECT pk.provider, pk.jenis_produk, count(1) as trx, sum(t.harga - t.harga_beli) AS laba FROM transaksi t"
+	query = fmt.Sprintf("%s JOIN produk p ON t.kode_produk = p.kode LEFT JOIN produk_klasifikasi pk ON pk.kode_produk = t.kode_produk", query)
 	query += whereClause
-	query = fmt.Sprintf("%s having pk.provider in (SELECT DISTINCT(provider) from produk_klasifikasi where provider NOT IN ('#N/A')) order by pk.provider,pk.jenis_produk  desc", query)
+	query = fmt.Sprintf("%s HAVING pk.provider IN (SELECT DISTINCT(provider) FROM produk_klasifikasi WHERE provider NOT IN ('#N/A')) ORDER BY pk.provider,pk.jenis_produk DESC", query)
 	if err := cnx.Debug().Raw(query).Scan(&result).Error; err != nil {
 		return model.DetailResponse{}, err
 	}
