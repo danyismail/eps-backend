@@ -278,11 +278,16 @@ func (c *HubConstruct) GetBrandCategoryRevenue(startDt, endDt, path, code string
 	whereClause := fmt.Sprintf(" WHERE t.status = 20 AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s' GROUP BY pk.provider, pk.jenis_produk", startDt, endDt)
 	if startDt != "" {
 		if startDt == "yesterday" {
-			whereClause = " WHERE tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND tgl_entri < CAST(GETDATE() AS DATE) "
+			whereClause = " WHERE t.status = 20 AND tgl_entri >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND tgl_entri < CAST(GETDATE() AS DATE) "
 		} else if startDt != "" && endDt != "" {
-			whereClause = fmt.Sprintf(" WHERE tgl_entri >= '%s' AND tgl_entri < '%s' ", startDt, endDt)
+			if startDt == endDt {
+				whereClause = fmt.Sprintf(" WHERE t.status = 20 AND t.tgl_entri >= CAST('%s' AS DATE) AND t.tgl_entri < DATEADD(DAY, 1, CAST('%s' AS DATE)) ", startDt, endDt)
+			} else {
+				whereClause = fmt.Sprintf(" WHERE t.status = 20 AND tgl_entri >= '%s' AND tgl_entri <= '%s' ", startDt, endDt)
+			}
 		}
 	} else if startDt == "" || endDt == "" {
+		//start of today till current time
 		whereClause = " WHERE tgl_entri >= CAST(GETDATE() AS DATE) AND tgl_entri < DATEADD(DAY, 1, CAST(GETDATE() AS DATE)) "
 	}
 
