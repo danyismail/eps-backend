@@ -47,6 +47,10 @@ func (c *HubConstruct) GetBrandRevenue(startDt, endDt string) ([]model.BrandReve
 			Name: "Otodev",
 			Cnx:  c.db.Otodev,
 		},
+		{
+			Name: "ServerOne",
+			Cnx:  c.db.ServerOne,
+		},
 	}
 
 	results := make(chan *model.BrandRevenue, len(listCnx))

@@ -9,7 +9,7 @@ import (
 
 func (h *Handler) GetSupplierBalance(c echo.Context) error {
 	h.e.Logger.Info("::GetSupplierBalance Started::")
-	result, err := h.depositStore.GetBalance(c.Param("e"))
+	result, err := h.depositStore.GetBalance(c.Param("e"), c.QueryParam("p"))
 	if err != nil {
 		h.e.Logger.Error(err)
 		h.errorBot.SendMessage(err)

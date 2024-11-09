@@ -18,7 +18,7 @@ type KpiStore interface {
 }
 
 type DepositStore interface {
-	GetBalance(conn string) ([]model.CurrentDeposit, error)
+	GetBalance(conn string, periode ...string) ([]model.CurrentDeposit, error)
 }
 
 type SalesStore interface {
