@@ -39,8 +39,8 @@ func (c *DepositConstruct) GetBalance(path string, periode ...string) ([]model.C
 		JOIN modul m ON
 			t.kode_modul = m.kode
 		WHERE 
-			m.tgl_data >= CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
-			AND m.tgl_data < CAST(GETDATE() AS DATE)
+			t.tgl_entri >= CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
+			AND t.tgl_entri < CAST(GETDATE() AS DATE)
 			AND t.status = 20
 		GROUP BY
 			t.kode_modul,
