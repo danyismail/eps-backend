@@ -28,25 +28,34 @@ func (c *DepositConstruct) GetBalance(path string, periode ...string) ([]model.C
 	switch p {
 	case "yesterday":
 		sql = `
-		SELECT 
-			kode_modul,
-			m.label,
-			count(1) AS total_transaksi,
-			sum(harga_beli) AS pemakaian_saldo,
-			m.saldo AS saldo_sekarang
-		FROM 
-			transaksi t
-		JOIN modul m ON
-			t.kode_modul = m.kode
-		WHERE 
-			t.tgl_entri >= CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
-			AND t.tgl_entri < CAST(GETDATE() AS DATE)
-			AND t.status = 20
-		GROUP BY
-			t.kode_modul,
-			m.label,
-			m.saldo
-		ORDER BY m.label ASC;`
+		SELECT
+	subquery.label,
+	subquery.total_transaksi,
+	subquery.pemakaian_saldo,
+	vpsm.saldo_sekarang
+FROM
+	(
+	SELECT
+		t.kode_modul,
+		m.label as label,
+		COUNT(1) AS total_transaksi,
+		SUM(harga_beli) AS pemakaian_saldo
+	FROM
+		transaksi t
+	JOIN modul m ON
+		t.kode_modul = m.kode
+	WHERE
+		t.tgl_entri >= CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)
+		AND t.tgl_entri < CAST(GETDATE() AS DATE)
+		AND t.status = 20
+	GROUP BY
+		t.kode_modul,
+		m.label
+    ) AS subquery
+JOIN v_pemakaian_saldo_min1 vpsm
+    ON
+	subquery.kode_modul = vpsm.kode_modul;
+		`
 	default: // default to "today"
 		sql = `
 		SELECT
