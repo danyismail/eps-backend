@@ -10,7 +10,7 @@ import (
 func (h *Handler) HealthCheck(c echo.Context) error {
 	h.e.Logger.Info("::HealthCheck Started::")
 	return c.JSON(http.StatusOK, structs.CommonResponse{
-		Data:       "pong",
+		Data:       "api is alive",
 		StatusCode: http.StatusOK,
 		Message:    "success",
 	})
