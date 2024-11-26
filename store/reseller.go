@@ -140,7 +140,7 @@ func (c *ResellerConstruct) GetLabaRugi(path, from, to string) ([]model.CekLabaR
 		to = time.Now().Format(utils.DateOnly)
 	}
 	b := strings.Builder{}
-	b.WriteString("SELECT join_table.nama, join_table.trx, pivot_table.laba, COALESCE(pivot_table.rugi, 0) rugi ")
+	b.WriteString("SELECT join_table.nama, join_table.trx, COALESCE(pivot_table.laba, 0) + COALESCE(pivot_table.rugi, 0) laba, COALESCE(pivot_table.rugi, 0) rugi ")
 	b.WriteString("FROM (SELECT r.nama, harga - harga_beli selisih, CASE WHEN harga < harga_beli THEN 'rugi' ELSE 'laba' END keterangan ")
 	b.WriteString("FROM transaksi t JOIN reseller r ON t.kode_reseller = r.kode ")
 	b.WriteString(fmt.Sprintf("WHERE cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s' and t.status = 20) source_table ", from, to))
