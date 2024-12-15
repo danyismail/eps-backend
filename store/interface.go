@@ -74,3 +74,11 @@ type HubStore interface {
 type RevenueStore interface {
 	GetRevenueByHour(dbConn string) ([][]model.RevenuePerHour, error)
 }
+
+type ValueListStore interface {
+	GetAll(page, view int, shortCode string) ([]model.ValueList, int, error)
+	Create(vl *model.ValueList) error
+	GetOne(id int) (*model.ValueList, error)
+	Update(id int, vl *model.ValueList) error
+	Delete(id int) error
+}

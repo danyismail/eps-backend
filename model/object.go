@@ -173,3 +173,10 @@ type Dbs struct {
 type PPH struct {
 	TotalPph float64 `json:"total_pph"`
 }
+
+type ValueList struct {
+	ID        int    `json:"id"`
+	ShortCode string `json:"short_code"`
+	ShortDesc string `json:"short_desc"`
+	Value     string `json:"value"`
+}

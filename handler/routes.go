@@ -26,6 +26,14 @@ func (h *Handler) Register(v1 *echo.Group) {
 	user.GET("/search/:id", h.GetByID)
 	user.DELETE("/delete/:id", h.Delete)
 
+	//create value list
+	valueList := v1.Group("/valuelist", customJWTMiddleware)
+	valueList.GET("/all", h.GetValueList)
+	valueList.POST("/create", h.CreateValueList)
+	valueList.GET("/search/:id", h.GetValueListById)
+	valueList.PUT("/update/:id", h.UpdateValueList)
+	valueList.DELETE("/delete/:id", h.DeleteValueList)
+
 	kpi := v1.Group("/kpi", customJWTMiddleware)
 	kpi.POST("/:e/list", h.GetAll)
 
