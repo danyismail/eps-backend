@@ -40,10 +40,6 @@ func (c *HubConstruct) GetBrandRevenue(startDt, endDt string) ([]model.BrandReve
 			Cnx:  c.db.Eps,
 		},
 		{
-			Name: "Amazone",
-			Cnx:  c.db.Backup,
-		},
-		{
 			Name: "Otodev",
 			Cnx:  c.db.Otodev,
 		},

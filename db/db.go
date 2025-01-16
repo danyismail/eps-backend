@@ -15,7 +15,6 @@ type DBConnection struct {
 	DigiEps     *gorm.DB
 	Amazone     *gorm.DB
 	Eps         *gorm.DB
-	Backup      *gorm.DB
 	Otodev      *gorm.DB
 	ServerOne   *gorm.DB
 	ValuePulsa  *gorm.DB
@@ -46,12 +45,6 @@ func New() (DBConnection, error) {
 	USERNAME_REPLICA_EPS := os.Getenv("USERNAME_REPLICA_EPS")
 	PASSWORD_REPLICA_EPS := os.Getenv("PASSWORD_REPLICA_EPS")
 
-	DB_HOST_BACKUP := os.Getenv("DB_HOST_BACKUP")
-	DB_PORT_BACKUP := os.Getenv("DB_PORT_BACKUP")
-	DB_BACKUP := os.Getenv("DB_BACKUP")
-	USERNAME_BACKUP := os.Getenv("USERNAME_BACKUP")
-	PASSWORD_BACKUP := os.Getenv("PASSWORD_BACKUP")
-
 	DB_HOST_OTODEV := os.Getenv("DB_HOST_OTODEV")
 	DB_PORT_OTODEV := os.Getenv("DB_PORT_OTODEV")
 	DB_OTODEV := os.Getenv("DB_OTODEV")
@@ -70,7 +63,7 @@ func New() (DBConnection, error) {
 	USERNAME_VALUEPULSA := os.Getenv("USERNAME_VALUEPULSA")
 	PASSWORD_VALUEPULSA := os.Getenv("PASSWORD_VALUEPULSA")
 
-	if DB_HOST_DIGI == "" || DB_HOST_REPLICA == "" || DB_HOST_BACKUP == "" {
+	if DB_HOST_DIGI == "" || DB_HOST_REPLICA == "" {
 		log.Fatalln("database credentials not define.")
 	}
 
@@ -79,7 +72,6 @@ func New() (DBConnection, error) {
 		"server=" + DB_HOST_DIGI + "," + DB_PORT_DIGI + ";user id=" + USERNAME_DIGIEPS + ";password=" + PASSWORD_DIGIEPS + ";encrypt=disable;database=" + DB_DIGIEPS,
 		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USERNAME_REPLICA_AMAZONE + ";password=" + PASSWORD_REPLICA_AMAZONE + ";encrypt=disable;database=" + DB_REPLICA_AMAZONE,
 		"server=" + DB_HOST_REPLICA + "," + DB_PORT_REPLICA + ";user id=" + USERNAME_REPLICA_EPS + ";password=" + PASSWORD_REPLICA_EPS + ";encrypt=disable;database=" + DB_REPLICA_EPS,
-		"server=" + DB_HOST_BACKUP + "," + DB_PORT_BACKUP + ";user id=" + USERNAME_BACKUP + ";password=" + PASSWORD_BACKUP + ";encrypt=disable;database=" + DB_BACKUP,
 		"server=" + DB_HOST_OTODEV + "," + DB_PORT_OTODEV + ";user id=" + USERNAME_OTODEV + ";password=" + PASSWORD_OTODEV + ";encrypt=disable;database=" + DB_OTODEV,
 		"server=" + DB_HOST_SERVERONE + "," + DB_PORT_SERVERONE + ";user id=" + USERNAME_SERVERONE + ";password=" + PASSWORD_SERVERONE + ";encrypt=disable;database=" + DB_SERVERONE,
 		"server=" + DB_HOST_VALUEPULSA + "," + DB_PORT_VALUEPULSA + ";user id=" + USERNAME_VALUEPULSA + ";password=" + PASSWORD_VALUEPULSA + ";encrypt=disable;database=" + DB_VALUEPULSA,
@@ -117,24 +109,18 @@ func New() (DBConnection, error) {
 			}
 			instanceDB.Eps = db
 		case 4:
-			db, err := setConnectionDB("backup_amazone", v)
-			if err != nil {
-				return instanceDB, err
-			}
-			instanceDB.Backup = db
-		case 5:
 			db, err := setConnectionDB("otodev", v)
 			if err != nil {
 				return instanceDB, err
 			}
 			instanceDB.Otodev = db
-		case 6:
+		case 5:
 			db, err := setConnectionDB("SERVERONE", v)
 			if err != nil {
 				return instanceDB, err
 			}
 			instanceDB.ServerOne = db
-		case 7:
+		case 6:
 			db, err := setConnectionDB("VALUEPULSA", v)
 			if err != nil {
 				return instanceDB, err
