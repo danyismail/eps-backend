@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM golang:1.23.4-alpine3.21 AS builder
 
 RUN apk add --no-cache git
 
@@ -12,7 +12,7 @@ COPY . .
 
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o myapp
 
-FROM alpine:latest
+FROM alpine:3.21
 
 WORKDIR /app
 
