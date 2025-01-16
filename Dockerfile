@@ -1,23 +1,29 @@
-# Start from the Alpine Linux image
-FROM golang:alpine
+FROM golang:alpine AS builder
 
-# Set the current working directory inside the container
+RUN apk add --no-cache git
+
 WORKDIR /app
 
-# Copy the rest of the application code
+COPY go.mod go.sum ./
+
+RUN go mod download
+
 COPY . .
 
-# Download dependencies
-RUN rm -rf go.mod go.sum
-RUN go mod init eps-backend && go mod tidy
-
-# Build the Go application
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o myapp
 
-# Expose port 1523 to the outside world :)
+FROM alpine:latest
+
+WORKDIR /app
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /app/myapp .
+
+COPY .env .
+
+RUN chmod 644 .env
+
 EXPOSE 1523
 
-# Command to run the executable
 CMD ["./myapp"]
-
-#docker run -v /Users/daniismail/Documents/uploads:/app/uploads -v /Users/daniismail/Documents/backend-logs:/app/app.log  -p 1525:1525 -d eps-backend-api
