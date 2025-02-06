@@ -20,6 +20,7 @@ func NewHubStore(db db.DBConnection) *HubConstruct {
 }
 
 func (c *HubConstruct) GetBrandRevenue(startDt, endDt string) ([]model.BrandRevenue, error) {
+	fmt.Println("masuk sini")
 	var wg sync.WaitGroup
 	//c.db.DigiAmazone, c.db.DigiEps, c.db.Amazone, c.db.Eps, c.db.Backup, c.db.Otodev
 	listCnx := []model.Dbs{
@@ -147,9 +148,9 @@ func processBrandReveneu(db model.Dbs, startDt, endDt string, result chan<- *mod
 		}
 	}
 
-	sql := "SELECT FORMAT(sum(t.harga),'0.######') penjualan, FORMAT(sum(t.harga_beli),'0.######') pembelian, COUNT(1) AS trx,"
-	sql = fmt.Sprintf("%s CASE WHEN sum(t.harga) - sum(t.harga_beli) > 0 THEN 0 WHEN sum(t.harga) - sum(t.harga_beli) < 0 THEN FORMAT(sum(t.harga) - sum(t.harga_beli),'0.######')", sql)
-	sql = fmt.Sprintf("%s END AS tekor, FORMAT(sum(t.harga - p.harga_jual),'0.######') bakar, FORMAT(sum(t.harga) - sum(t.harga_beli),'0.######') laba, FORMAT(sum(t.komisi) ,'0.######') komisi, 0 ppn11, 0 pph22", sql)
+	sql := "SELECT sum(t.harga) AS penjualan, sum(t.harga_beli) AS pembelian, COUNT(1) AS trx,"
+	sql = fmt.Sprintf("%s CASE WHEN sum(t.harga) - sum(t.harga_beli) > 0 THEN 0 WHEN sum(t.harga) - sum(t.harga_beli) < 0 THEN sum(t.harga) - sum(t.harga_beli)", sql)
+	sql = fmt.Sprintf("%s END AS tekor, sum(t.harga - p.harga_jual) AS bakar, sum(t.harga) - sum(t.harga_beli) AS laba, sum(t.komisi) AS komisi, 0 AS ppn11, 0 AS pph22", sql)
 	sql = fmt.Sprintf("%s FROM transaksi t LEFT JOIN produk p on t.kode_produk = p.kode LEFT JOIN reseller r ON t.kode_reseller = r.kode ", sql)
 	if flagSameDate {
 		sql = fmt.Sprintf("%s WHERE status = 20 AND %s ", sql, startDt)
@@ -159,9 +160,9 @@ func processBrandReveneu(db model.Dbs, startDt, endDt string, result chan<- *mod
 
 	//1. get brand revenue
 	var brandsRevenue *model.BrandRevenue
-	fmt.Println(db.Name)
+	fmt.Println(db.Name, " jalanin process brand revenue")
 	if err := db.Cnx.Debug().Raw(sql).Scan(&brandsRevenue).Error; err != nil {
-		log.Printf("failed to query brand revenue : %v", err)
+		log.Printf("failed to query brand revenue : %v on %s", err, db.Name)
 		result <- nil
 		return
 	}
@@ -251,7 +252,7 @@ func processBrandReveneu(db model.Dbs, startDt, endDt string, result chan<- *mod
 	//4. get loss revenue
 	lossRevenue, err := getLossRevenue(startDateExist, endDtExist, db.Cnx)
 	if err != nil {
-		log.Printf("failed to query loss revenue: %v", err)
+		log.Printf("failed to query loss revenue: %v on %s", err, db.Name)
 		result <- nil
 		return
 	}
@@ -388,7 +389,7 @@ func getLossRevenue(startDt, endDt string, conn *gorm.DB) (float64, error) {
 	innerQuery := ` SELECT 
 			CASE
 				WHEN COALESCE(t.harga, 0) - COALESCE(t.harga_beli, 0) > 0 THEN 0
-				WHEN COALESCE(t.harga, 0) - COALESCE(t.harga_beli, 0) < 0 THEN FORMAT(t.harga - t.harga_beli, '0.######')
+				WHEN COALESCE(t.harga, 0) - COALESCE(t.harga_beli, 0) < 0 THEN t.harga - t.harga_beli
 			END AS tekor
 		FROM transaksi t `
 	outerQuery := ") AS subquery;"
