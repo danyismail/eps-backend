@@ -15,7 +15,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to open log file...:", err)
 	}
-
 	err = godotenv.Load()
 	if err != nil {
 		log.Fatalln("error loading .env file")
@@ -26,7 +25,6 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	defer file.Close()
 
 	r := router.New(file)
