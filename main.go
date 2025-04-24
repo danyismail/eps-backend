@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("error loading .env file")
 	}
-	//connection pooling
+	//connection pooling..
 	listConn, err := db.New()
 	if err != nil {
 		log.Fatalln(err)
