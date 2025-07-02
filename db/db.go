@@ -128,7 +128,6 @@ func New() (DBConnection, error) {
 			instanceDB.ValuePulsa = db
 		}
 	}
-
 	log.Println("successfully create all conn..")
 	return instanceDB, nil
 }
