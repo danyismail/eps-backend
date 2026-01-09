@@ -96,7 +96,7 @@ func (c *SalesConstruct) GetSalesPeriode(path, from, to string) ([]model.SalesRe
 
 	//query 1 get sales
 	salesToday := []model.SalesReport{}
-	sql := "SELECT COUNT(1) AS trx, SUM(t.harga_beli) AS pembelian, SUM(t.harga) AS penjualan ,SUM(t.harga) - SUM(t.harga_beli) AS laba"
+	sql := "SELECT COUNT(1) AS trx, SUM(t.harga_beli) AS pembelian, SUM(t.harga) AS penjualan, SUM(t.komisi) AS komisi, SUM(t.harga) - SUM(t.harga_beli) AS laba"
 	sql = fmt.Sprintf("%s FROM transaksi t", sql)
 	sql = fmt.Sprintf("%s WHERE t.status = 20", sql)
 	sql = fmt.Sprintf("%s AND cast(t.tgl_entri AS date) BETWEEN '%s' AND '%s';", sql, from, to)
