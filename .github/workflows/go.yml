@@ -35,7 +35,7 @@ jobs:
                 echo "container not found"
             fi
                 echo "remove , pull , build and run"
-                cd ~/go/src/eps-backend
+                cd eps-backend
                 sudo git pull origin development
                 docker build -t eps-backend-prod:latest .
                 docker run -v /home/eps/go/src/eps-backend/uploads:/app/uploads -v /home/eps/backend-logs/app.log:/app/app.log  -p 1523:1523 -d eps-backend-prod
